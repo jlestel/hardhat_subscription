@@ -22,11 +22,24 @@
     "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
     "@nomicfoundation/hardhat-toolbox": "^1.0.1",
     "@nomiclabs/hardhat-ethers": "^2.0.0",
-    "@nomiclabs/hardhat-etherscan": "^3.0.0",
+    "@nomiclabs/hardhat-etherscan": "^3.1.0",
+    "@openzeppelin/hardhat-upgrades": "^1.21.0",
     "chai": "^4.2.0",
     "ethers": "^5.4.7",
     "hardhat": "^2.11.0",
+    "hardhat-contract-sizer": "^2.6.1",
     "hardhat-gas-reporter": "^1.0.8",
-    "solidity-coverage": "^0.7.21"
+    "solidity-coverage": "^0.7.21",
+    "truffle-contract-size": "^2.0.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.7.3",
+    "@openzeppelin/contracts-upgradeable": "^4.8.0-rc.1",
+    "@openzeppelin/test-helpers": "^0.5.16",
+    "node-fetch": "^2.6.7",
+    "node-telegram-bot-api": "^0.59.0",
+    "react-telegram-login": "^1.1.2",
+    "telegraf": "^4.10.0",
+    "telegram": "^2.12.8"
   }
 }

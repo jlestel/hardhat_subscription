@@ -1,18 +1,13 @@
 import React from "react";
+import { CSpinner, CAlert } from '@coreui/react'
+import { useSelector } from 'react-redux'
 
-export function NetworkErrorMessage({ message, dismiss }) {
-  return (
-    <div className="alert alert-danger" role="alert">
-      {message}
-      <button
-        type="button"
-        className="close"
-        data-dismiss="alert"
-        aria-label="Close"
-        onClick={dismiss}
-      >
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
+export function NetworkErrorMessage({}) {
+  const networkError = useSelector((state) => state.networkError)
+
+  return networkError && (
+    <CAlert color="danger">
+      {networkError}
+    </CAlert>
   );
 }

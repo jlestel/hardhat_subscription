@@ -1,8 +1,25 @@
 import React from "react";
+import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import {useEffect} from 'react';
+import {
+  CButton,
+} from '@coreui/react'
+//import { useStore } from 'react-redux'
 
 import { NetworkErrorMessage } from "./NetworkErrorMessage";
+import { connectWallet } from "./Dapp";
 
-export function ConnectWallet({ connectWallet, networkError, dismiss }) {
+export function ConnectWallet({}) {
+  const networkError = useSelector((state) => state.networkError)
+  //const store = useStore()
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log('networkError', networkError)
+  });
+
   return (
     <div className="container">
       <div className="row justify-content-md-center">
@@ -11,21 +28,16 @@ export function ConnectWallet({ connectWallet, networkError, dismiss }) {
           {networkError && (
             <NetworkErrorMessage 
               message={networkError} 
-              dismiss={dismiss} 
             />
           )}
         </div>
         <div className="col-6 p-4 text-center">
           <p>Please connect to your wallet.</p>
-          <button
-            className="btn btn-warning"
-            type="button"
-            onClick={connectWallet}
-          >
-            Connect Wallet
-          </button>
+          <CButton type="submit" onClick={() => connectWallet(dispatch)}>Connect Wallet</CButton>
         </div>
       </div>
     </div>
   );
 }
+
+export default ConnectWallet

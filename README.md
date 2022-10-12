@@ -1,48 +1,31 @@
-# Hardhat Boilerplate
+# Payperblock
 
-This repository contains a sample project that you can use as the starting point
-for your Ethereum project. It's also a great fit for learning the basics of
-smart contract development.
+This repository contains Payperblock SaaS project based on Ethereum. You can consult Smart Contract.
 
-This project is intended to be used with the
-[Hardhat Beginners Tutorial](https://hardhat.org/tutorial), but you should be
-able to follow it by yourself by reading the README and exploring its
+You should consult Makefile and explore its
 `contracts`, `tests`, `scripts` and `frontend` directories.
 
 ## Quick start
 
-The first things you need to do are cloning this repository and installing its
-dependencies:
-
 ```sh
-git clone https://github.com/NomicFoundation/hardhat-boilerplate.git
-cd hardhat-boilerplate
 npm install
-```
-
-Once installed, let's run Hardhat's testing network:
-
-```sh
-npx hardhat node
-```
-
-Then, on a new terminal, go to the repository's root folder and run this to
-deploy your contract:
-
-```sh
-npx hardhat run scripts/deploy.js --network localhost
-```
-
-Finally, we can run the frontend with:
-
-```sh
 cd frontend
 npm install
-npm start
+cd ../frontend_api
+npm install
 ```
 
-Open [http://localhost:3000/](http://localhost:3000/) to see your Dapp. You will
-need to have [Metamask](https://metamask.io) installed and listening to
+Once installed, let's run Hardhat's testing network, using debug:
+
+```sh
+hardhat node
+hardhat deploy
+hardhat deploy upgrade
+api
+frontend
+```
+
+[http://localhost:3000/](http://localhost:3000/) is opened and you can see the local DApp. You need to have [Metamask](https://metamask.io) installed and listening to
 `localhost 8545`.
 
 ## User Guide

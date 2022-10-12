@@ -1,16 +1,45 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { Dapp } from "./components/Dapp";
+import 'react-app-polyfill/stable'
+import 'core-js'
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App'
+import reportWebVitals from './reportWebVitals'
+import { Provider } from 'react-redux'
+import store from './store'
 
-// We import bootstrap here, but you can remove if you want
-import "bootstrap/dist/css/bootstrap.css";
+createRoot(document.getElementById('root')).render(
+  <Provider store={store}>
+    <App/>
+  </Provider>,
+)
 
-// This is the entry point of your application, but it just renders the Dapp
-// react component. All of the logic is contained in it.
+/*
+const e = React.createElement;
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Dapp />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+class LikeButton extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { liked: false };
+  }
+
+  render() {
+    if (this.state.liked) {
+      return 'You liked this.';
+    }
+
+    return e(
+      'button',
+      { onClick: () => this.setState({ liked: true }) },
+      'Like'
+    );
+  }
+}
+
+const domContainer = document.getElementById('like_button_container');
+const root = createRoot(domContainer);
+root.render(e(LikeButton));
+*/
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals()

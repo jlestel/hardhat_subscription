@@ -1,0 +1,45 @@
+<script type="text/javascript">
+    var seconds = 0;
+    var refreshTime = 1000;
+    function doDate() {
+        seconds+= refreshTime;
+        let d = parseInt(seconds / refreshTime);
+        if (d < 60) {
+            d += 'seconds';
+        } else if (d < 3600) {
+            d = parseInt(d / 60) + 'mn ' + (d % 60) + 's.'
+        } else if (d < 86400) {
+            let h = parseInt(d / 3600)
+            let r = d % 3600
+            d = h + 'h ' + parseInt(r / 60) + 'mn ' + (r % 60) + 's.'
+        }
+        let currentDate = document.getElementById('timePpb');
+        currentDate.innerHTML = `Time elasped: ${d}`;
+
+        if (seconds % 5000 === 0) {
+            const req = new XMLHttpRequest();
+            req.addEventListener("load", reqListener);
+            req.open("GET", "http://test.localhost:3001/apippb/refresh?session={{session}}&time=5000");
+            //req.open("GET", "https://apipayperblock.citio.digital/apippb/refresh?session={{session}}&time=5000");
+            req.send();
+        }
+
+    }
+
+    setInterval(doDate, refreshTime);
+
+    function reqListener () {
+      console.log(this.responseText);
+      const res = JSON.parse(this.responseText);
+      if (res && !res.valid) {
+          window.location='{{domain}}';
+      }
+    }
+</script>
+<div
+    style=" z-index: 999999999; background: #84baff; line-height: 2; text-align: center; color: #FFFF; font-size: 30px; font-family: sans-serif; font-weight: bold; text-shadow: 0 1px 0 #84BAFF; box-shadow: 0 0 15px #00214B; position: fixed; bottom: 0px;width: 100%;">
+    {{plan}} - 
+    <b id="timePpb" style="font-size: 24px;"></b>
+    <a id="closePpb" href="{{domain}}" style="position: fixed;right: 20px;font-size: 24 !important; color: #FFF;">Close</a>
+</div>    
+</body>

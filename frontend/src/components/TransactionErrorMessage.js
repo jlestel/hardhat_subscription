@@ -1,18 +1,23 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
-export function TransactionErrorMessage({ message, dismiss }) {
-  return (
-    <div className="alert alert-danger" role="alert">
-      Error sending transaction: {message.substring(0, 100)}
-      <button
-        type="button"
-        className="close"
-        data-dismiss="alert"
-        aria-label="Close"
-        onClick={dismiss}
-      >
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
+import {
+  CAlert
+} from '@coreui/react'
+
+export function TransactionErrorMessage({}) {
+  const transactionError = useSelector((state) => state.transactionError)
+  const dispatch = useDispatch()
+
+  return transactionError && (
+    <CAlert
+    color="danger"
+    dismissible
+    onClose={() => {
+      dispatch({type: 'set', transactionError: null})
+    }}>
+    {transactionError.message.toString()}
+    </CAlert>
   );
 }

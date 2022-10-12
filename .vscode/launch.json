@@ -1,0 +1,104 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "hardhat node",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat", "node"],
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "hardhat test",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat", "test" ,"--network", "localhost"],
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "hardhat deploy",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat" ,"run" ,"scripts/deploy.js" ,"--network", "localhost"],
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "hardhat deploy upgrade v2",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat" ,"run" ,"scripts/deploy-upgrade.js" ,"--network", "localhost"],
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "front",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npm",
+        "args": ["start"],
+        "cwd": "${workspaceFolder}/frontend/"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "api",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npm",
+        "args": ["start"],
+        "cwd": "${workspaceFolder}/frontend_api/"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "rebill local",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat" ,"--network" ,"localhost" ,"rebill"],
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "kick unpaid",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat" ,"--network" ,"localhost" ,"kickUnpaid"],
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "hardhat deploy GoerliETH",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat" ,"run" ,"scripts/deploy.js" ,"--network", "goerli"],
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "hardhat deploy GoerliETH upgrade V2",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat" ,"run" ,"scripts/deploy-upgrade.js" ,"--network", "goerli"],
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "rebill goerli",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat" ,"--network" ,"goerli" ,"rebill"],
+        "cwd": "${workspaceFolder}"
+      }
+    ]
+  }

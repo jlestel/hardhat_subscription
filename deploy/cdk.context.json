@@ -1,0 +1,22 @@
+{
+  "hosted-zone:account=892044541204:domainName=payperblock.xyz:region=eu-west-3": {
+    "Id": "/hostedzone/Z03567012ZSXHPDRZXMLK",
+    "Name": "payperblock.xyz."
+  },
+  "hosted-zone:account=892044541204:domainName=citio.digital:region=eu-west-3": {
+    "Id": "/hostedzone/Z08801527I1U0OT2YRET",
+    "Name": "citio.digital."
+  },
+  "hosted-zone:account=892044541204:domainName=citio.digital:region=us-east-1": {
+    "Id": "/hostedzone/Z08801527I1U0OT2YRET",
+    "Name": "citio.digital."
+  },
+  "availability-zones:account=892044541204:region=us-east-1": [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f"
+  ]
+}

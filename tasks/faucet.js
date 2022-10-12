@@ -15,7 +15,7 @@ task("faucet", "Sends ETH and tokens to an address")
     }
 
     const addressesFile =
-      __dirname + "/../frontend/src/contracts/contract-address.json";
+      __dirname + "/../frontend/src/contracts/"+network.name+"/contract-Token-address.json";
 
     if (!fs.existsSync(addressesFile)) {
       console.error("You need to deploy your contract first");
@@ -33,7 +33,7 @@ task("faucet", "Sends ETH and tokens to an address")
     const token = await ethers.getContractAt("Token", address.Token);
     const [sender] = await ethers.getSigners();
 
-    const tx = await token.transfer(receiver, 100);
+    const tx = await token.transfer(receiver, 10000);
     await tx.wait();
 
     const tx2 = await sender.sendTransaction({
@@ -42,5 +42,5 @@ task("faucet", "Sends ETH and tokens to an address")
     });
     await tx2.wait();
 
-    console.log(`Transferred 1 ETH and 100 tokens to ${receiver}`);
+    console.log(`Transferred 1 ETH and 10000 tokens to ${receiver}`);
   });

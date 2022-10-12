@@ -1,9 +1,14 @@
 import React from "react";
+import { CSpinner, CAlert } from '@coreui/react'
+import { useSelector } from "react-redux";
 
-export function WaitingForTransactionMessage({ txHash }) {
-  return (
-    <div className="alert alert-info" role="alert">
-      Waiting for transaction <strong>{txHash}</strong> to be mined
-    </div>
+export function WaitingForTransactionMessage({}) {
+  const txBeingSent = useSelector((state) => state.txBeingSent)
+
+  return txBeingSent && (
+    <CAlert color="primary" dismissible>
+      <CSpinner color="primary" size="sm"/>&nbsp;
+      Waiting for transaction to be mined...
+    </CAlert>
   );
 }
