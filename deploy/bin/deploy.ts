@@ -124,7 +124,7 @@ class MyStaticSiteStack extends cdk.Stack {
       memorySize: 1024,
       timeout: cdk.Duration.seconds(10),
       handler: 'lambda.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, './../../frontend_api')),
+      code: lambda.Code.fromAsset(path.join(__dirname, './../../api')),
       retryAttempts: 0,
       logRetention: 1,
     });
@@ -182,7 +182,7 @@ class MyStaticSiteStack extends cdk.Stack {
       memorySize: 1024,
       timeout: cdk.Duration.seconds(30),
       handler: 'tasks.rebill',
-      code: lambda.Code.fromAsset(path.join(__dirname, './../../frontend_api')),
+      code: lambda.Code.fromAsset(path.join(__dirname, './../../api')),
       retryAttempts: 0,
       logRetention: 1,
     });

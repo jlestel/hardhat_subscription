@@ -97,9 +97,9 @@ async function main() {
   saveFrontendFiles(token, "Token", network.name);
   saveFrontendFiles(tokenbis, "TokenBis", network.name);
   saveFrontendFiles(payment, "PaymentV1", network.name);
-  saveFrontendFiles(token, "Token", network.name, "frontend_api");
-  saveFrontendFiles(tokenbis, "TokenBis", network.name, "frontend_api");
-  saveFrontendFiles(payment, "PaymentV1", network.name, "frontend_api");
+  saveFrontendFiles(token, "Token", network.name, "api");
+  saveFrontendFiles(tokenbis, "TokenBis", network.name, "api");
+  saveFrontendFiles(payment, "PaymentV1", network.name, "api");
 }
 
 function saveFrontendFiles(token, contractName, network = null, folder = "frontend/src") {

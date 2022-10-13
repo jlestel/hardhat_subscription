@@ -11,7 +11,7 @@ You should consult Makefile and explore its
 npm install
 cd frontend
 npm install
-cd ../frontend_api
+cd ../api
 npm install
 ```
 

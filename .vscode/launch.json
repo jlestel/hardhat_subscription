@@ -53,7 +53,7 @@
         "skipFiles": ["<node_internals>/**"],
         "runtimeExecutable": "/opt/homebrew/bin/npm",
         "args": ["start"],
-        "cwd": "${workspaceFolder}/frontend_api/"
+        "cwd": "${workspaceFolder}/api/"
       },
       {
         "type": "pwa-node",
@@ -71,7 +71,7 @@
         "skipFiles": ["<node_internals>/**"],
         "runtimeExecutable": "/opt/homebrew/bin/node",
         "args": ["testTasks"],
-        "cwd": "${workspaceFolder}/frontend_api",
+        "cwd": "${workspaceFolder}/api",
         "env": {
           "HARDHAT_NETWORK": "localhost"
         }            
