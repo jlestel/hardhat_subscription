@@ -18,8 +18,6 @@ preparehardhatlambda:
 	- cp -R artifacts frontend_api/
 	- cp -R cache frontend_api/
 	- cp -R contracts frontend_api/
-	- cp -R tasks frontend_api/	
-	- mkdir -p contracts_generated
-	- cp -R frontend/src/contracts/ frontend_api/contracts_generated/
+	- cp -R tasks frontend_api/
 	- cd frontend_api && npm i
 #	- cp -R frontend/src/contracts/* frontend_api/contracts/	

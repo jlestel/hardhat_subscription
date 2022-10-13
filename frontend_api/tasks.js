@@ -11,7 +11,7 @@ exports.rebill = async(event, context) => {
     
     const fs = require("fs");
     const addressesFile =
-      __dirname + "/contracts_generated/"+network+"/contract-"+contract+"-address.json";
+      __dirname + "/contracts/"+network+"/contract-"+contract+"-address.json";
 
     if (!fs.existsSync(addressesFile)) {
       console.error("You need to deploy your contract first");

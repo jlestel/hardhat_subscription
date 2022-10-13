@@ -97,14 +97,14 @@ async function main() {
   saveFrontendFiles(token, "Token", network.name);
   saveFrontendFiles(tokenbis, "TokenBis", network.name);
   saveFrontendFiles(payment, "PaymentV1", network.name);
-  /*saveFrontendFiles(token, "Token", network.name);
-  saveFrontendFiles(tokenbis, "TokenBis", network.name);
-  saveFrontendFiles(payment, "PaymentV1", network.name);*/
+  saveFrontendFiles(token, "Token", network.name, "frontend_api");
+  saveFrontendFiles(tokenbis, "TokenBis", network.name, "frontend_api");
+  saveFrontendFiles(payment, "PaymentV1", network.name, "frontend_api");
 }
 
-function saveFrontendFiles(token, contractName, network = null) {
+function saveFrontendFiles(token, contractName, network = null, folder = "frontend/src") {
   const fs = require("fs"); 
-  let contractsDir = path.join(__dirname, "..", "frontend", "src", "contracts");
+  let contractsDir = path.join(__dirname, "..", folder, "contracts");
   if (network) {
     contractsDir = path.join(contractsDir, network)
   }
@@ -126,7 +126,7 @@ function saveFrontendFiles(token, contractName, network = null) {
   );
 
   if (network === null) return;
-  saveFrontendFiles(token, contractName);
+  saveFrontendFiles(token, contractName, null, folder);
 }
 
 main()
