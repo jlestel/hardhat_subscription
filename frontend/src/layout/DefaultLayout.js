@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux'
 import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
 import { NoWalletDetected } from "../components/NoWalletDetected";
 import { ConnectWallet } from "../components/ConnectWallet";
+import { Usage } from "../components/Usage";
+import { UseCases } from 'src/components/UseCases';
 
 const DefaultLayout = ({  }) => {
 
@@ -22,7 +24,13 @@ const DefaultLayout = ({  }) => {
             <NoWalletDetected />
             )}
           {eth && !address && (
+            <>
             <ConnectWallet />
+            <hr/>
+            <Usage />
+            <hr/>
+            <UseCases />
+            </>
           )}
           {eth && address && (
           < AppContent />

@@ -7,3 +7,8 @@ artifacts
 
 frontend_api/contracts/
 .openzeppelin
+
+schedule/contracts*
+schedule/contracts*
+schedule/tasks/
+schedule/hardhat.config.js

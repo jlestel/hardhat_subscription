@@ -18,7 +18,7 @@ const groupBy = function(xs, key) {
 };
 
 task("kickUnpaid", "Kick unpaid subscriptions")
-  .setAction(async ({}, { ethers }) => {
+  .setAction(async ({contractName, contractAddress}, { ethers }) => {
     if (network.name === "hardhat") {
       console.warn(
         "You are running the faucet task with Hardhat network, which" +
@@ -27,23 +27,12 @@ task("kickUnpaid", "Kick unpaid subscriptions")
       );
     }
 
-    const addressesFile =
-      __dirname + "/../frontend/src/contracts/"+network.name+"/contract-PaymentV1-address.json";
-
-    if (!fs.existsSync(addressesFile)) {
+    if ((await ethers.provider.getCode(contractAddress)) === "0x") {
       console.error("You need to deploy your contract first");
       return;
     }
 
-    const addressJson = fs.readFileSync(addressesFile);
-    const address = JSON.parse(addressJson);
-
-    if ((await ethers.provider.getCode(address.Token)) === "0x") {
-      console.error("You need to deploy your contract first");
-      return;
-    }
-
-    const payment = await ethers.getContractAt("PaymentV1", address.Token);
+    const payment = await ethers.getContractAt(contractName, contractAddress);
 
     const plans = await payment.getPlans(false);
     //////////////

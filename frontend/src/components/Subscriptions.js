@@ -81,8 +81,9 @@ export function Subscriptions(/*{ subscriptions, cancel, access }*/) {
     }
   }
   const mapSubscriptionsToSelect = (x) => {
-    const value = mapSubscriptions(x)
-    return <option value={value.id} key={value.id}>{value.planName + ' - ' + value.planType + ' - Next Payment: ' + value.nextPayment}</option>
+    const value = mapSubscriptions(x);
+    if (value)
+      return <option value={value.id} key={value.id}>{value.planName + ' - ' + value.planType + ' - Next Payment: ' + value.nextPayment}</option>
   }
   
   return (

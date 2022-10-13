@@ -2,6 +2,7 @@ import React from 'react'
 import {
   CAvatar,
   CBadge,
+  CButton,
   CDropdown,
   CDropdownDivider,
   CDropdownHeader,
@@ -15,6 +16,7 @@ import {
   cilCommentSquare,
   cilEnvelopeOpen,
   cilFile,
+  cilCheck,
   cilLockLocked,
   cilSettings,
   cilTask,
@@ -38,69 +40,87 @@ const AppHeaderDropdown = () => {
   const subscriptions = useSelector((state) => state.subscriptions)
   const plans = useSelector((state) => state.plans)
   const selectedNetwork = useSelector((state) => state.selectedNetwork)
-  
+
   const dispatch = useDispatch()
 
   return (
-    <CDropdown variant="nav-item">
-      <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-          {selectedAddress && (
-            <CBadge color="info" className="ms-2">
-              <CIcon icon={cilAt} className="me-2" />
-            {selectedAddress}
+    <>
+      <CDropdown variant="nav-item">
+        <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
+          <CButton type="submit"
+            onClick={(e) => {
+              connectWallet(dispatch)
+            }}>
+            <CIcon icon={selectedAddress ? cilCheck : cilLockLocked} className="me-2" />
+            {!selectedAddress && ("Connect Wallet")}
+            {selectedAddress && ("Connected")}
+          </CButton>
+        </CDropdownToggle>
+        <CDropdownMenu className="pt-0" placement="bottom-end">
+          <CDropdownHeader className="bg-light fw-semibold py-2">My Subscriptions</CDropdownHeader>
+          <CDropdownItem href="/#/subscription/list">
+            <CIcon icon={cilUser} className="me-2" />
+            Subscriptions
+            <CBadge color="success" className="ms-2">
+              {subscriptions.length}
             </CBadge>
-          )}
-          {!selectedAddress && (
-            <CBadge color="warning" className="ms-2">
-              <CIcon icon={cilAt} className="me-2" />
-            Not Connected
+          </CDropdownItem>
+          <CDropdownItem href="/#/subscription/create">
+            <CIcon icon={cilUser} className="me-2" />
+            Subscribe to a plan
+          </CDropdownItem>
+          <CDropdownHeader className="bg-light fw-semibold py-2">My Merchant Plans</CDropdownHeader>
+          <CDropdownItem href="/#/plan/list">
+            <CIcon icon={cilTask} className="me-2" />
+            Plans
+            <CBadge color="danger" className="ms-2">
+              {plans.length}
             </CBadge>
-          )}
-          {selectedNetwork && selectedNetwork !== undefined && (
-          <CBadge color="info" className="ms-2">
-            <CIcon icon={cilCloudy} className="me-2" />
-            {selectedNetwork.networkName}
-          </CBadge>
-          )}
-      </CDropdownToggle>
-      <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-light fw-semibold py-2">My Subscriptions</CDropdownHeader>
-        <CDropdownItem href="/#/subscription/list">
-          <CIcon icon={cilUser} className="me-2" />
-          Subscriptions
-          <CBadge color="success" className="ms-2">
-          {subscriptions.length}
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="/#/subscription/create">
-          <CIcon icon={cilUser} className="me-2" />
-          Subscribe to a plan
-        </CDropdownItem>
-        <CDropdownHeader className="bg-light fw-semibold py-2">Merchant</CDropdownHeader>
-        <CDropdownItem href="/#/plan/list">
-          <CIcon icon={cilTask} className="me-2" />
-          Plans
-          <CBadge color="danger" className="ms-2">
-            {plans.length}
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="/#/plan/create">
-          <CIcon icon={cilCreditCard} className="me-2" />
-          Create a plan
-        </CDropdownItem>
-        <CDropdownDivider />
-        <CDropdownItem href="#" onClick={(e) => {
-          if (selectedAddress)
-            reset()
-          else
-            connectWallet(dispatch)
-        }}>
-          <CIcon icon={cilLockLocked} className="me-2" />
-          {!selectedAddress && ("Connect Wallet")}
-          {selectedAddress && ("Disconnect Wallet")}
-        </CDropdownItem>
-      </CDropdownMenu>
-    </CDropdown>
+          </CDropdownItem>
+          <CDropdownItem href="/#/plan/create">
+            <CIcon icon={cilCreditCard} className="me-2" />
+            Create a plan
+          </CDropdownItem>
+          <CDropdownDivider />
+          <CDropdownHeader className="bg-light fw-semibold py-2">@ {selectedAddress && (selectedAddress.toString().substr(1, 30)+'...')}</CDropdownHeader>
+          <CDropdownItem href="#" onClick={(e) => {
+            if (selectedAddress)
+              reset()
+            else
+              connectWallet(dispatch)
+          }}>
+            <CIcon icon={cilLockLocked} className="me-2" />
+            {!selectedAddress && ("Connect Wallet")}
+            {selectedAddress && ("Disconnect Wallet")}
+          </CDropdownItem>
+        </CDropdownMenu>
+      </CDropdown>
+      {selectedNetwork && selectedNetwork !== undefined && (
+        <CDropdown variant="nav-item">
+          <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
+            <CButton>
+              <CIcon icon={cilCloudy} className="me-2" />
+              {selectedNetwork.networkName}
+            </CButton>
+            <CDropdownMenu className="pt-0" placement="bottom-end">
+              <CDropdownHeader className="bg-light fw-semibold py-2">Switch Network in Metamask</CDropdownHeader>
+              <CDropdownItem>
+                Avalanche Fuji
+              </CDropdownItem>
+              <CDropdownItem>
+                BNB Chain Testnet
+              </CDropdownItem>
+              <CDropdownItem>
+                Fantom Testnet
+              </CDropdownItem>
+              <CDropdownItem>
+                Polygon Mumbai
+              </CDropdownItem>
+            </CDropdownMenu>
+          </CDropdownToggle>
+        </CDropdown>
+      )}
+    </>
   )
 }
 

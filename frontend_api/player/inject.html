@@ -19,8 +19,8 @@
         if (seconds % 5000 === 0) {
             const req = new XMLHttpRequest();
             req.addEventListener("load", reqListener);
-            req.open("GET", "http://test.localhost:3001/apippb/refresh?session={{session}}&time=5000");
-            //req.open("GET", "https://apipayperblock.citio.digital/apippb/refresh?session={{session}}&time=5000");
+            //req.open("GET", "http://test.localhost:3001/apippb/refresh?session={{session}}&time=5000");
+            req.open("GET", "https://apipayperblock.citio.digital/apippb/refresh?session={{session}}&time=5000");
             req.send();
         }
 

@@ -1,5 +1,7 @@
 import React from 'react'
 
+const Usage = React.lazy(() => import('./components/Usage'))
+const UseCases = React.lazy(() => import('./components/UseCases'))
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/manage/Subscriptions'))
 //const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -55,7 +57,8 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 const routes = [
-  { path: '/', exact: true, name: 'Home' },
+  { path: '/', exact: true, name: 'How to monetize content?', element: Usage },
+  { path: '/usecases', exact: true, name: 'Use cases', element: UseCases },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   //{ path: '/subscriptions2', name: 'All my subscriptions', element: Colors },

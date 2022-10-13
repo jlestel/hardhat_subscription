@@ -125,6 +125,8 @@ class MyStaticSiteStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(10),
       handler: 'lambda.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, './../../frontend_api')),
+      retryAttempts: 0,
+      logRetention: 1,
     });
 
     const constructProps: LambdaToDynamoDBProps = {
@@ -178,9 +180,11 @@ class MyStaticSiteStack extends cdk.Stack {
         "HARDHAT_NETWORK": "goerli",
       },
       memorySize: 1024,
-      timeout: cdk.Duration.seconds(10),
-      handler: 'tasks.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, './../../frontend_api')),
+      timeout: cdk.Duration.seconds(30),
+      handler: 'tasks.rebill',
+      code: lambda.Code.fromAsset(path.join(__dirname, './../../schedule')),
+      retryAttempts: 0,
+      logRetention: 1,
     });
     const lambdaTarget = new cdk.aws_events_targets.LambdaFunction(scheduleFunction)
     const eventRule = new cdk.aws_events.Rule(this, 'scheduleRule', {

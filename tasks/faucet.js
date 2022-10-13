@@ -5,7 +5,7 @@ const fs = require("fs");
 
 task("faucet", "Sends ETH and tokens to an address")
   .addPositionalParam("receiver", "The address that will receive them")
-  .setAction(async ({ receiver }, { ethers }) => {
+  .setAction(async ({ contractName, contractAddress, receiver }, { ethers }) => {
     if (network.name === "hardhat") {
       console.warn(
         "You are running the faucet task with Hardhat network, which" +
@@ -14,23 +14,12 @@ task("faucet", "Sends ETH and tokens to an address")
       );
     }
 
-    const addressesFile =
-      __dirname + "/../frontend/src/contracts/"+network.name+"/contract-Token-address.json";
-
-    if (!fs.existsSync(addressesFile)) {
+    if ((await ethers.provider.getCode(contractAddress)) === "0x") {
       console.error("You need to deploy your contract first");
       return;
     }
 
-    const addressJson = fs.readFileSync(addressesFile);
-    const address = JSON.parse(addressJson);
-
-    if ((await ethers.provider.getCode(address.Token)) === "0x") {
-      console.error("You need to deploy your contract first");
-      return;
-    }
-
-    const token = await ethers.getContractAt("Token", address.Token);
+    const token = await ethers.getContractAt(contractName, contractAddress);
     const [sender] = await ethers.getSigners();
 
     const tx = await token.transfer(receiver, 10000);

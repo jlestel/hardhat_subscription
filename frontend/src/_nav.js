@@ -18,10 +18,32 @@ import {
   cilBank,
   cilChartLine,
   cilMonitor,
+  cilHome,
+  cilNoteAdd,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 const _nav = [
+  {
+    component: CNavItem,
+    name: 'Home',
+    to: '/',
+    icon: <CIcon icon={cilHome} customClassName="nav-icon" />,
+    /*badge: {
+      color: 'info',
+      text: 'NEW',
+    },*/
+  },   
+  {
+    component: CNavItem,
+    name: 'Sample use-cases',
+    to: '/usecases',
+    icon: <CIcon icon={cilBank} customClassName="nav-icon" />,
+    /*badge: {
+      color: 'info',
+      text: 'NEW',
+    },*/
+  },   
   {
     component: CNavItem,
     name: 'Dashboard',

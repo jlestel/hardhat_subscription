@@ -35,9 +35,9 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
     if (renew === null) {
       setRenew(true)
       //if (isNaN(document.getElementById('selectOccurence').value) || document.getElementById('selectOccurence').value <= 0) {
-      if (document.getElementById('checkRenew')) {
+      /*if (document.getElementById('checkRenew')) {
         document.getElementById('checkRenew').checked = true
-      }
+      }*/
       //}
     }
     if (planType === null) {
@@ -129,7 +129,7 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
               setRenew(true)
             }
             dispatch({ type: 'set', isValidPlan: null })
-          }} selectedValue={planType}>
+          }}>
             
             <option value="">What type of content do you want to monetize?</option>
             <option value="0">Telegram Private Channel Access</option>
@@ -183,7 +183,7 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
                   e.preventDefault();
                   console.log('selectToken', e.target.value);
                   setToken(e.target.value);
-                }} selectedValue={token && (token)} required>
+                }} required>
                 <option value="">Choose a token</option>
                 {mapTokensToSelect()}  
               </CFormSelect>
@@ -201,7 +201,7 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
               <CFormSelect id="selectDuration" label="&nbsp;"
               onChange={(e) => {
                 setDuration(e.target.value)
-              }} selectedValue={duration}>
+              }}>
                 <option value="60">Minutes</option>
                 <option value="3600">Hours</option>
                 <option value="86400">Days</option>
@@ -210,7 +210,7 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
               </CFormSelect>
             </CCol>
             <CCol xs={12}>
-              <CFormSwitch name="checkRenew" id="checkRenew" label="Renew frequency for this plan?" onClick={(e) => {
+              <CFormSwitch name="checkRenew" id="checkRenew" label="Renew frequency for this plan?" onChange={(e) => {
                 setRenew(e.target.checked)
               }} disabled={planType == '3'} checked={renew}/>
             </CCol>

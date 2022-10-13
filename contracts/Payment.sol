@@ -150,7 +150,7 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     function getPlans(bool onlyMine) public view returns (Plan[] memory) {
         uint length = 0;
-        for (uint i = 0; i <= length; i++) {
+        for (uint i = 0; i <= nextPlanId; i++) {
             if (onlyMine) {
               if (plans[i].merchant == msg.sender) {
                 length += 1;
@@ -174,7 +174,7 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     function getSubscriptions(bool onlyMine) public view returns (Subscription[] memory) {
         uint length = 0;
-        for (uint i = 0; i <= length; i++) {
+        for (uint i = 0; i <= nextSubscriptionId; i++) {
             if (onlyMine) {
               if (_allSubscriptions[i].subscriber == msg.sender) {
                 length += 1;
@@ -185,12 +185,13 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
               }
             }
         }
-        
         Subscription[] memory mySubscriptions = new Subscription[](length);
+        uint y = 0;
         for (uint256 index = 0; index < nextSubscriptionId; index++) {
             if (_allSubscriptions[index].subscriber != address(0)) {
               if (!onlyMine || (onlyMine && _allSubscriptions[index].subscriber == msg.sender)) {
-                mySubscriptions[index] = _allSubscriptions[index];
+                mySubscriptions[y] = _allSubscriptions[index];
+                y += 1;
               }
             }  
         }

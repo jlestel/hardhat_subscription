@@ -5,7 +5,7 @@ const fs = require("fs");
 // feel free to ignore it if you don't need it.
 
 task("rebill", "Rebill subscriptions")
-  .setAction(async ({}, { ethers }) => {
+  .setAction(async ({contractName, contractAddress}, { ethers }) => {
     if (network.name === "hardhat") {
       console.warn(
         "You are running the faucet task with Hardhat network, which" +
@@ -14,23 +14,12 @@ task("rebill", "Rebill subscriptions")
       );
     }
 
-    const addressesFile =
-      __dirname + "/../frontend/src/contracts/"+network.name+"/contract-PaymentV1-address.json";
-
-    if (!fs.existsSync(addressesFile)) {
+    if ((await ethers.provider.getCode(contractAddress)) === "0x") {
       console.error("You need to deploy your contract first");
       return;
     }
 
-    const addressJson = fs.readFileSync(addressesFile);
-    const address = JSON.parse(addressJson);
-
-    if ((await ethers.provider.getCode(address.Token)) === "0x") {
-      console.error("You need to deploy your contract first");
-      return;
-    }
-
-    const payment = await ethers.getContractAt("PaymentV1", address.Token);
+    const payment = await ethers.getContractAt(contractName, contractAddress);
     //const [sender] = await ethers.getSigners();
     const sub = await payment.getSubscriptions(false);
     /*const increaseGasLimit = (estimatedGasLimit) => {

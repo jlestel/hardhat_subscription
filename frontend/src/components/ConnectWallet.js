@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 import {
   CButton,
 } from '@coreui/react'
@@ -10,7 +10,7 @@ import {
 import { NetworkErrorMessage } from "./NetworkErrorMessage";
 import { connectWallet } from "./Dapp";
 
-export function ConnectWallet({}) {
+export function ConnectWallet({ }) {
   const networkError = useSelector((state) => state.networkError)
   //const store = useStore()
 
@@ -26,14 +26,13 @@ export function ConnectWallet({}) {
         <div className="col-12 text-center">
           {/* Metamask network should be set to Localhost:8545. */}
           {networkError && (
-            <NetworkErrorMessage 
-              message={networkError} 
+            <NetworkErrorMessage
+              message={networkError}
             />
           )}
         </div>
-        <div className="col-6 p-4 text-center">
-          <p>Please connect to your wallet.</p>
-          <CButton type="submit" onClick={() => connectWallet(dispatch)}>Connect Wallet</CButton>
+        <div className="text-center">
+          You need a to connect your wallet to start &nbsp; <CButton type="submit" onClick={() => connectWallet(dispatch)}>Connect Wallet</CButton>
         </div>
       </div>
     </div>
