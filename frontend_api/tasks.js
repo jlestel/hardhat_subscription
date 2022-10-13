@@ -28,5 +28,4 @@ exports.rebill = async(event, context) => {
 
     const rebill = await hre.run('rebill', {contractName: contract, contractAddress: address.Token});
     console.log('complete!');
-    
 }

@@ -1,4 +1,6 @@
-require("@nomicfoundation/hardhat-toolbox");
+//require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-network-helpers");
+require("@nomiclabs/hardhat-ethers");
 require('@openzeppelin/hardhat-upgrades');
 require('hardhat-contract-sizer');
 //require("@nomiclabs/hardhat-etherscan");

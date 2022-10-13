@@ -1,5 +1,8 @@
 node_modules
 .idea
+# Ignore Mac DS_Store files 
+.DS_Store 
+**/.DS_Store
 
 #Hardhat files
 cache
@@ -8,7 +11,9 @@ artifacts
 frontend_api/contracts/
 .openzeppelin
 
-schedule/contracts*
-schedule/contracts*
-schedule/tasks/
-schedule/hardhat.config.js
+frontend_api/contracts*
+frontend_api/contracts*
+frontend_api/tasks/
+frontend_api/hardhat.config.js
+frontend_api/.DS_Store
+frontend_api/.DS_Store

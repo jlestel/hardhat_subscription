@@ -182,7 +182,7 @@ class MyStaticSiteStack extends cdk.Stack {
       memorySize: 1024,
       timeout: cdk.Duration.seconds(30),
       handler: 'tasks.rebill',
-      code: lambda.Code.fromAsset(path.join(__dirname, './../../schedule')),
+      code: lambda.Code.fromAsset(path.join(__dirname, './../../frontend_api')),
       retryAttempts: 0,
       logRetention: 1,
     });
