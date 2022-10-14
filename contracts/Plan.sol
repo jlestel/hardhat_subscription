@@ -19,7 +19,6 @@ abstract contract PlanV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         string planTypeInfos;
         string planName;
         string merchantName;
-        string tokenName;
     }
 
     mapping(uint => Plan) public plans;
@@ -48,7 +47,6 @@ abstract contract PlanV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         uint frequency,
         uint8 planType,
         string memory planTypeInfos,
-        string memory tokenName,
         string memory planName,
         string memory merchantName
     ) external {
@@ -64,8 +62,7 @@ abstract contract PlanV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             planType,
             planTypeInfos,
             planName,
-            merchantName,
-            tokenName
+            merchantName
         );
         nextPlanId++;
     }

@@ -13,6 +13,7 @@ const DefaultLayout = ({  }) => {
   // injected, we instruct the user to install MetaMask.
   const eth = window.ethereum
   const address = useSelector((state) => state.selectedAddress)
+  const selectedNetwork = useSelector((state) => state.selectedNetwork)
   
   return (
     <div>
@@ -24,14 +25,21 @@ const DefaultLayout = ({  }) => {
             <NoWalletDetected />
             )}
           {eth && !address && (
-            <>
             <ConnectWallet />
+          )}
+          {((eth === undefined) || (eth && !address)) && (
+            <>
             <hr/>
             <Usage />
             <hr/>
+            <ConnectWallet />
+            <hr/>
             <UseCases />
+            <hr/>
+            <ConnectWallet />
             </>
           )}
+
           {eth && address && (
           < AppContent />
           )}

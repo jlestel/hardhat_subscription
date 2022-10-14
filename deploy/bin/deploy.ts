@@ -122,9 +122,14 @@ class MyStaticSiteStack extends cdk.Stack {
         subnetType: cdk.aws_ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
       memorySize: 1024,
-      timeout: cdk.Duration.seconds(10),
+      timeout: cdk.Duration.seconds(120),
       handler: 'lambda.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, './../../api')),
+      environment: {
+        "HARDHAT_NETWORK": "goerli",
+        "PLAYER_API": "https://apipayperblock.citio.digital",
+        "NETWORKS"  : "5",
+      },
       retryAttempts: 0,
       logRetention: 1,
     });

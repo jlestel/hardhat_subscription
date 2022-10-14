@@ -70,7 +70,7 @@ const mapSubscriptions = (x) => {
     nextPayment: Moment(x.nextPayment * 1000).format('DD/MM/YYYY h:m'),
     planType: x.plan.planType === 0 ? cibTelegram : x.plan.planType === 1 ? cibDiscord : cibSafari,
     planName: x.plan.planName.toString(),
-    amount: x.plan.amount.toString() + ' ' + x.plan.tokenName.toString() + ' each ' + Moment.duration(x.plan.frequency*1000).as(temp) + ' ' + temp,
+    amount: x.plan.amount.toString() + ' ' /*+ x.plan.tokenName.toString()*/ + ' each ' + Moment.duration(x.plan.frequency*1000).as(temp) + ' ' + temp,
     merchant: x.plan.merchantName.toString(),
   }
 }

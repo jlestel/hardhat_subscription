@@ -22,7 +22,6 @@ task("rebill", "Rebill subscriptions")
     const payment = await ethers.getContractAt(contractName, contractAddress);
     //const [sender] = await ethers.getSigners();
     const sub = await payment.getSubscriptions(false);
-    const plans = await payment.getPlans(false);
     /*const increaseGasLimit = (estimatedGasLimit) => {
       return estimatedGasLimit.mul(300).div(100) // increase by 30%
     }*/
@@ -35,13 +34,10 @@ task("rebill", "Rebill subscriptions")
           const date = new Date();
           const time = parseInt(date.getTime()/1000);
           if ( (time - parseInt(sub[i].nextPayment)) > 0) {
-            const plan = plans.filter(e => e.planId == sub[i].planId)[0];
-            if (plan.planType.toString() != '3') { // no need to renew by duration plan
-              console.log("Renew ...",i, sub[i].subscriber, "on plan ", sub[i].planId.toString(), parseInt(sub[i].nextPayment), parseInt(date.getTime()/1000));
-              const tx = await payment.pay(sub[i].subscriptionId.toString(), { /*from: sub[i].subscriber, */gasLimit: 150000});
-              const receipt = await tx.wait();
-              console.log("Renewed !",i, sub[i].subscriber, "on plan ", sub[i].planId.toString(), parseInt(sub[i].nextPayment), parseInt(date.getTime()/1000));
-            }
+            console.log("Renew ...",i, sub[i].subscriber, "on plan ", sub[i].planId.toString(), parseInt(sub[i].nextPayment), parseInt(date.getTime()/1000));
+            const tx = await payment.pay(sub[i].subscriptionId.toString(), { /*from: sub[i].subscriber, */gasLimit: 150000});
+            const receipt = await tx.wait();
+            console.log("Renewed !",i, sub[i].subscriber, "on plan ", sub[i].planId.toString(), parseInt(sub[i].nextPayment), parseInt(date.getTime()/1000));
           } else {
             console.log('No need to pay...', i, sub[i].planId.toString(), time - parseInt(sub[i].nextPayment.toString()));
           }

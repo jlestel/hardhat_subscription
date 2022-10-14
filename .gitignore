@@ -8,12 +8,11 @@ node_modules
 cache
 artifacts
 
-api/contracts/
+#api/contracts/
 .openzeppelin
 
-api/contracts*
-api/contracts*
-api/tasks/
+#api/contracts*
+#api/tasks/
 api/hardhat.config.js
 api/.DS_Store
 api/.DS_Store

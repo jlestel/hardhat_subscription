@@ -53,7 +53,7 @@ const Subscribe = ({ miniMode }) => {
       id: x.planId.toString(), 
       type: x.planType === 0 ? 'Telegram Access' : x.planType === 1 ? 'Discord Access' : 'Web Content',
       plan: x.planName.toString(),
-      amount: x.amount.toString() + ' ' + x.tokenName.toString() + ' each ' + Moment.duration(x.frequency*1000).as(temp) + ' ' + temp,
+      amount: x.amount.toString() + ' ' /*+ x.tokenName.toString() */+ ' each ' + Moment.duration(x.frequency*1000).as(temp) + ' ' + temp,
       merchant: x.merchantName.toString(),
     }
   }

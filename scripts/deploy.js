@@ -50,20 +50,20 @@ async function main() {
   tokenbis.attach(payment.address);
   
   console.log("Create plan");
-  let transaction = await payment.createPlan(tokenbis.address, 30, 600, 0, '-1001664553005', 'BUSD', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: address});
+  let transaction = await payment.createPlan(tokenbis.address, 30, 600, 0, '-1001664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: address});
   console.log("Plan created");
   await transaction.wait();
-  transaction = await payment.createPlan(tokenbis.address, 15, 60, 2, 'https://www.google.com', 'BUSD', 'Accès contenu Web privé - Abonnement à la minute', 'Marchant Contenus Web',  {from: address});
+  transaction = await payment.createPlan(tokenbis.address, 15, 600, 2, 'https://www.google.com', 'Accès contenu Web privé - Abonnement toute les 10 minutes', 'Marchant Contenus Web',  {from: address});
   await transaction.wait();
   console.log("Create plan");
-  transaction = await payment.createPlan(token.address, 100, 86400, 2, 'https://randomuser.me', 'USDT', 'Accès contenu Web privé - Abonnement à la minute', 'Marchant Contenus Web',  {from: address});
+  transaction = await payment.createPlan(token.address, 100, 60, 3, 'https://randomuser.me', 'Accès contenu Web privé - By duration à la minute', 'Marchant Contenus Web',  {from: address});
   await transaction.wait();
-  console.log("Create plan");
-  transaction = await payment.createPlan(token.address, 100, 86400, 2, 'https://www.youtube.com', 'USDT', 'Accès MonIp', 'Marchant',  {from: address});
-  await transaction.wait();
-  console.log("End create plan");
   
   if (network.name === "localhost") {
+    console.log("Create plan duration 15 seconds");
+    transaction = await payment.createPlan(token.address, 1, 15, 3, 'https://www.google.com', 'google - By duration', 'Marchant',  {from: address});
+    await transaction.wait();
+    console.log("End create plan");
     transaction = await token.transfer(first.address, 100000); 
     await transaction.wait();
     transaction = await token.connect(first).approve(payment.address, 100000);
@@ -84,6 +84,8 @@ async function main() {
     await transaction.wait();
     transaction = await payment.connect(first).subscribe(1, '', {from: first.address});
     await transaction.wait();
+    transaction = await payment.connect(first).subscribe(2, '', {from: first.address});
+    await transaction.wait();
     transaction = await payment.connect(first).subscribe(3, '', {from: first.address});
     await transaction.wait();
   }
@@ -97,14 +99,14 @@ async function main() {
   saveFrontendFiles(token, "Token", network.name);
   saveFrontendFiles(tokenbis, "TokenBis", network.name);
   saveFrontendFiles(payment, "PaymentV1", network.name);
-  saveFrontendFiles(token, "Token", network.name, "api");
-  saveFrontendFiles(tokenbis, "TokenBis", network.name, "api");
-  saveFrontendFiles(payment, "PaymentV1", network.name, "api");
+  /*saveFrontendFiles(token, "Token", network.name);
+  saveFrontendFiles(tokenbis, "TokenBis", network.name);
+  saveFrontendFiles(payment, "PaymentV1", network.name);*/
 }
 
-function saveFrontendFiles(token, contractName, network = null, folder = "frontend/src") {
+function saveFrontendFiles(token, contractName, network = null) {
   const fs = require("fs"); 
-  let contractsDir = path.join(__dirname, "..", folder, "contracts");
+  let contractsDir = path.join(__dirname, "..", "api", "contracts");
   if (network) {
     contractsDir = path.join(contractsDir, network)
   }
@@ -125,8 +127,8 @@ function saveFrontendFiles(token, contractName, network = null, folder = "fronte
     JSON.stringify(TokenArtifact, null, 2)
   );
 
-  if (network === null) return;
-  saveFrontendFiles(token, contractName, null, folder);
+  //if (network === null) return;
+  //saveFrontendFiles(token, contractName);
 }
 
 main()

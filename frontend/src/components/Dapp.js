@@ -1,17 +1,10 @@
 // We'll use ethers to interact with the Ethereum network and our contract
 import { ethers } from "ethers";
 
-// We import the contract's artifacts and address here, as we are going to be
-// using them with ethers
-import TokenArtifact from "../contracts/Sample.json";
-/*import contractAddress from "../contracts/contract-Token-address.json";
-import TokenBisArtifact from "../contracts/TokenBis.json";*/
-//import contractBisAddress from "../contracts/contract-TokenBis-address.json";
-import PaymentArtifact from "../contracts/PaymentV1.json";
-import contractPaymentAddress from "../contracts/contract-PaymentV1-address.json";
-
 // This is an error code that indicates that the user canceled a transaction
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
+
+let tokens = null;
 
 const connectWallet = async(dispatch) => {
   if (dispatch)
@@ -78,23 +71,22 @@ const _initialize = async(userAddress) => {
   await _initializeEthers();
   //await _getTokenData();
   await _startPollingData(userAddress);
+
+  // Get balance and allowance for all tokens
+  
 }
 
 const _initializeEthers = async() => {
   // We first initialize ethers by creating a provider using window.ethereum
   global._provider = new ethers.providers.Web3Provider(window.ethereum);
 
-  // Then, we initialize the contract using that provider and the token's
-  // artifact. You can do this same thing with your contracts.
-  /*global.token = new ethers.Contract(
-    contractAddress.Token,
-    TokenArtifact.abi,
-    _provider.getSigner(0)
-  );*/
+  console.log('window.ethereum.networkVersion.toString()', window.ethereum.networkVersion.toString());
+  const abi = tokens[window.ethereum.networkVersion.toString()].contract.abi;
+  console.log(tokens[window.ethereum.networkVersion.toString()].contract.address);
   
   global.payment = new ethers.Contract(
-    contractPaymentAddress.Token,
-    PaymentArtifact.abi,
+    tokens[window.ethereum.networkVersion.toString()].contract.address,
+    abi,
     global._provider.getSigner(0)
   );
 }
@@ -107,7 +99,7 @@ const _getTokenData = async(tokenAddress) => {
   // artifact. You can do this same thing with your contracts.
   const token =  new ethers.Contract(
     tokenAddress,
-    TokenArtifact.abi,
+    tokens[window.ethereum.networkVersion.toString()].tokens[0].abi,
     global._provider.getSigner(0)
   );
   const name = await token.name();
@@ -157,6 +149,40 @@ const updateBalance = async(tokenAddress, address) => {
   } catch (e) {console.log(e)}
 }
 
+const getAddresses = async() => {
+  try {
+    const response = await fetch(process.env.REACT_APP_API_DOMAIN + '/contractppb/getContracts', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(response.code);
+    //console.log('getContracts',response.json());
+    return response.json();
+  } catch (e) {
+    //global.dispatch({ type: 'set',  isValidPlan: {error: e.message} });
+  }
+}
+
+const faucets = async(receiver) => {
+  try {
+    const response = await fetch(process.env.REACT_APP_API_DOMAIN + '/contractppb/faucets', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        receiver: receiver
+      }),
+    });
+    console.log(response.code);
+    console.log('response',response);
+  } catch (e) {
+    //global.dispatch({ type: 'set',  isValidPlan: {error: e.message} });
+  }
+}
+
 const validPlan = async(planType, planTypeInfos) => {
   try {
     
@@ -191,9 +217,11 @@ const validSubscription = async(receipt, subscription, plan = null) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        subscriptionId: receipt ? receipt.events[2].args['subscription']['subscriptionId'].toString() : subscription.subscriptionId,
+        subscriptionId: receipt ? receipt.events[2].args['subscription']['subscriptionId'].toString() : subscription.subscriptionId.toString(),
+        planId: receipt ? receipt.events[2].args['subscription']['planId'].toString() : subscription.planId.toString(),
+        token: receipt ? parseInt(receipt.events[2].args['plan']['token']) : plan.token,
         planType: receipt ? parseInt(receipt.events[2].args['plan']['planType']) : plan.planType,
-        frequency: receipt ? receipt.events[2].args['plan']['frequency'].toString() : plan.frequency,
+        frequency: receipt ? receipt.events[2].args['plan']['frequency'].toString() : plan.frequency.toString(),
         planTypeInfos: receipt ? receipt.events[2].args['plan']['planTypeInfos'].toString() : plan.planTypeInfos,
         subscriber: receipt ? receipt.events[2].args[0].toString() : subscription.subscriber,
         subscriberInfos: receipt ? receipt.events[2].args['subscription']['subscriberInfos'].toString() : subscription.subscriberInfos,
@@ -300,7 +328,9 @@ const _updateSubscriptions = async() => {
   let subscriptions = [];
   try {
     subscriptions = await global.payment.getSubscriptions(true);
-  } catch (e) {console.log(e)}
+  } catch (e) {
+    console.log(e)
+  }
   global.dispatch({ type: 'set',  subscriptions: subscriptions });
 }
 
@@ -308,14 +338,12 @@ const createPlan = async(plan) => {
   try {
     _dismissTransactionError();
     console.log(plan);
-    //transaction = await payment.createPlan(token.address, 100, 86400, 2, 'https://www.youtube.com', 'USDT', 'Accès MonIp', 'Marchant',  {from: address});
     const tx = await global.payment.createPlan(
       plan.address, 
       plan.amount, 
       plan.frequency, 
       plan.planType, 
       plan.planTypeInfos, 
-      plan.tokenName, 
       plan.planName, 
       plan.merchantName,
       {from: plan.subscriberAddress}
@@ -505,9 +533,12 @@ const reset = () => {
 
 // This method checks if Metamask selected network is Localhost:8545 
 const _checkNetwork = async() => {
-  const tokens = JSON.parse(process.env.REACT_APP_ALLOWED_TOKENS);
+  tokens = await getAddresses();
+  //const tokens = JSON.parse(process.env.REACT_APP_ALLOWED_TOKENS);
+  console.log('tokens', tokens);
   console.log('selected network',tokens[window.ethereum.networkVersion.toString()]);
   console.log('selected network',(tokens[window.ethereum.networkVersion.toString()] !== undefined));
+  global.dispatch({ type: 'set', tokens: tokens})
   global.dispatch({ type: 'set', selectedNetwork: tokens[window.ethereum.networkVersion.toString()]})
 
   if (tokens[window.ethereum.networkVersion.toString()] !== undefined) {
@@ -522,6 +553,7 @@ export {
   connectWallet,
   createPlan,
   cancel,
+  faucets,
   validPlan,
   validSubscription,
   approve,
@@ -530,6 +562,7 @@ export {
   updateAllowance,
   updateBalance,
   reset,
+  _getTokenData,
   _dismissTransactionError,
   _dismissNetworkError,
   _getRpcErrorMessage,

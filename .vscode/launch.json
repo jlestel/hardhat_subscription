@@ -53,7 +53,12 @@
         "skipFiles": ["<node_internals>/**"],
         "runtimeExecutable": "/opt/homebrew/bin/npm",
         "args": ["start"],
-        "cwd": "${workspaceFolder}/api/"
+        "cwd": "${workspaceFolder}/api/",
+        "env": {
+          "HARDHAT_NETWORK": "localhost",
+          "PLAYER_API": "http://localhost:3001",
+          "NETWORKS": "5,1337"
+        }
       },
       {
         "type": "pwa-node",
@@ -67,7 +72,7 @@
       {
         "type": "pwa-node",
         "request": "launch",
-        "name": "rebill lambda goerli",
+        "name": "rebill local lambda",
         "skipFiles": ["<node_internals>/**"],
         "runtimeExecutable": "/opt/homebrew/bin/node",
         "args": ["testTasks"],
@@ -81,9 +86,12 @@
         "request": "launch",
         "name": "kick unpaid",
         "skipFiles": ["<node_internals>/**"],
-        "runtimeExecutable": "/opt/homebrew/bin/npx",
-        "args": ["hardhat" ,"--network" ,"localhost" ,"kickUnpaid"],
-        "cwd": "${workspaceFolder}"
+        "runtimeExecutable": "/opt/homebrew/bin/node",
+        "args": ["testTasks"],
+        "cwd": "${workspaceFolder}/api",
+        "env": {
+          "HARDHAT_NETWORK": "localhost"
+        }
       },
       {
         "type": "pwa-node",

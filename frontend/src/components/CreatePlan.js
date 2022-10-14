@@ -80,7 +80,7 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
       id: x.planId.toString(), 
       planType: x.planType === 0 ? 'Telegram Access' : x.planType === 1 ? 'Discord Access' : 'Web Content',
       planName: x.planName.toString(),
-      amount: x.amount.toString() + ' ' + x.tokenName.toString() + ' each ' + Moment.duration(x.frequency*1000).as(temp) + ' ' + temp,
+      amount: x.amount.toString() + ' ' /*+ (await _getTokenData(plan.token)).symbol*/ + ' each ' + Moment.duration(x.frequency*1000).as(temp) + ' ' + temp, // x.tokenName.toString() 
       merchant: x.merchantName.toString(),
     }
   }
@@ -108,7 +108,7 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
       frequency: parseInt(event.target.elements.inputFrequency.value) * parseInt(duration), 
       planType: parseInt(planType),
       planTypeInfos: planType == '0' ? event.target.elements.inputTypeInfosTelegram.value : planType == '1' ? event.target.elements.inputTypeInfosDiscord.value : event.target.elements.inputTypeInfosUrl.value,
-      tokenName: getToken(token).name,
+      //tokenName: getToken(token).name,
       planName: event.target.elements.inputPlanName.value,
       merchantName: event.target.elements.inputMerchantName.value,
       subscriberAddress: selectedAddress
@@ -201,7 +201,8 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
               <CFormSelect id="selectDuration" label="&nbsp;"
               onChange={(e) => {
                 setDuration(e.target.value)
-              }}>
+              }} defaultValue="86400">
+                <option value="1">Seconds</option>
                 <option value="60">Minutes</option>
                 <option value="3600">Hours</option>
                 <option value="86400">Days</option>

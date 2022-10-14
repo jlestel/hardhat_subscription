@@ -7,6 +7,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var apiRouter = require('./routes/api');
+var contractRouter = require('./routes/contract');
 var proxyRouter = require('./routes/proxy');
 
 var app = express();
@@ -26,6 +27,7 @@ app.use(cors())
 //app.use(express.static(path.join(__dirname, 'public')));
 
 //app.use('/', indexRouter);
+app.use('/contractppb/', contractRouter);
 app.use('/apippb/', apiRouter);
 app.use('/playerppb/', proxyRouter);
 app.use('/', indexRouter);

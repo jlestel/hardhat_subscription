@@ -76,7 +76,7 @@ export function Subscriptions(/*{ subscriptions, cancel, access }*/) {
       nextPayment: Moment(x.nextPayment * 1000).format('DD/MM/YYYY h:m'),
       planType: plan.planType === 0 ? 'Telegram Access' : plan.planType === 1 ? 'Discord Access' : 'Web Content',
       planName: plan.planName.toString(),
-      amount: plan.amount.toString() + ' ' + plan.tokenName.toString() + ' each ' + Moment.duration(plan.frequency*1000).as(temp) + ' ' + temp,
+      amount: plan.amount.toString() + ' ' + /*plan.tokenName.toString()*/ + ' each ' + Moment.duration(plan.frequency*1000).as(temp) + ' ' + temp,
       merchant: plan.merchantName.toString(),
     }
   }
@@ -95,7 +95,7 @@ export function Subscriptions(/*{ subscriptions, cancel, access }*/) {
           Check <a href="/#/subscription/create">available plans</a>.
           </>
         )}
-        {subscriptions && subscriptions.length > 0 && (
+        {subscriptions && subscriptions.length > 0 && plans.length > 0 && (
           <>
           <label>You have {subscriptions.length} subscribtion:</label>
           <CTable columns={columns} items={subscriptions.map(mapSubscriptions)} />
@@ -110,7 +110,7 @@ export function Subscriptions(/*{ subscriptions, cancel, access }*/) {
             </CFormSelect>          
           </div>
           <div className="form-group">
-            <CButton component="a" href="#" color="primary" size="lg" onClick={handleAccess} disabled={subscriptionId === undefined || subscriptionId === ''}>Access Content</CButton>
+            <CButton component="a" href="#" color="primary" size="lg" onClick={handleAccess} disabled={!subscriptionId === undefined || subscriptionId === ''}>Access Content</CButton>
             &nbsp;
             <CButton component="a" href="#" color="secondary" size="lg" onClick={handleCancel} disabled={subscriptionId === undefined || subscriptionId === ''}>Cancel</CButton>
           </div>

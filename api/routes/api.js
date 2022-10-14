@@ -14,12 +14,11 @@ const REGION = "us-east-1"; //e.g. "us-east-1"
 const https = require('https');
 const fetch = require('node-fetch');
 
+const hre = require("hardhat");
+const fs = require("fs");
+
 /* GET home page. */
 router.get('/', async function(req, res, next) {
-  res.send('OK');
-  res.end();
-});
-router.get('/validSubscription', async function(req, res, next) {
   res.send('OK');
   res.end();
 });
@@ -37,6 +36,8 @@ router.get('/refresh', async function(req, res, next) {
   };
 
   let session = null;
+  let balance = 0;
+  let error = '';
   try {
     console.log('check session ' + keySession);
     const data = await ddbClient.send(new GetItemCommand(params));
@@ -44,11 +45,50 @@ router.get('/refresh', async function(req, res, next) {
     if (data && data.Item) {
       console.log("Success", data.Item.sessionValue.S);
       session = JSON.parse(data.Item.sessionValue.S);
-      if (session && session.planType && session.planType.toString() == '3') {
+
+      const network = process.env.HARDHAT_NETWORK;
+      const contract = "PaymentV1";
+      
+      const addressesFile = __dirname + "/../contracts/"+network+"/contract-"+contract+"-address.json";
+      if (!fs.existsSync(addressesFile)) {
+        console.error("You need to deploy your contract first");
+        return;
+      }
+      const addressJson = fs.readFileSync(addressesFile);
+      const address = JSON.parse(addressJson);
+      console.log(address.Token);
+
+      const payment = await hre.ethers.getContractAt(contract, address.Token);
+      //const instance = await payment.deployed();
+      balance = await payment.balance(session.subscriptionId.toString());
+      
+      if (session && session.type && session.type.toString() == '3') {
         if (!session.duration)
           session.duration = 0;
 
         session.duration = parseInt(session.duration) + parseInt(time);
+        // if session duration > plan.frequency : need to pay
+        console.log((session.duration / 1000),'>',session.frequency,'?');
+        if ((session.duration / 1000) >= session.frequency) {
+        //if (session.duration >= session.frequency) {
+          // Pay now by duration :)
+          console.log("Renew ...")
+          const isPayable = await payment.isRenewable(session.subscriptionId.toString());
+          if (isPayable) {
+            // TODO: here I don't wait ... need to check payment is done, else end session.
+            payment.pay(session.subscriptionId.toString(), { gasLimit: 150000});
+            //const tx = await payment.pay(session.subscriptionId.toString(), { gasLimit: 150000});
+            //const receipt = await tx.wait();
+            //balance = await payment.balance(session.subscriptionId.toString());
+            console.log("Renewed !");
+            session.duration = 0;
+          } else {
+            error = 'Insufficient allowance. You need to add fund to your wallet to access again.';
+            session = null;
+            session.duration = 0;
+          }
+        }
+
         const paramsUpdate = {
           TableName: process.env.DDB_TABLE_NAME || 'PayperblockSess',
           Key: {
@@ -64,12 +104,20 @@ router.get('/refresh', async function(req, res, next) {
         console.log(dataUpdate);
         // duration frequency subscriptionId
       }
+    } else {
+      session = null;
     }
   } catch (e) {
-    console.log(e);
+    if (e.message.indexOf('NOT_DUE') === -1) {
+      console.log(e.message);
+      error = e.message;
+      session = null;
+    } else {
+      console.log('not due !');
+    }
   }
   //TODO : increment
-  res.json({valid: (session != null), periodPaid: true});
+  res.json({valid: (session != null), periodPaid: true, balance: balance.toString(), message: error});
   res.end();
 });
 
@@ -157,6 +205,8 @@ router.post('/validSubscription', async function(req, res, next) {
   //const subscriberAddress = receipt.events[2].args[0].toString();
 
   const subscriptionId = req.body.subscriptionId.toString();
+  const planId = req.body.planId.toString();
+  const token = req.body.token.toString();
   const planType = req.body.planType.toString();
   const frequency = req.body.frequency.toString();
   const planTypeInfos = req.body.planTypeInfos;
@@ -166,10 +216,37 @@ router.post('/validSubscription', async function(req, res, next) {
   const sessionId = parseInt(Math.random() * 10000000000000000).toString(); //req.body.sessionId || '1234';
   const playerUrl = req.body.playerUrl.replace('{{session}}', sessionId);
 
+  const network = process.env.HARDHAT_NETWORK;
+  const contract = "PaymentV1";
+  
+  const addressesFile = __dirname + "/../contracts/"+network+"/contract-"+contract+"-address.json";
+  if (!fs.existsSync(addressesFile)) {
+    console.error("You need to deploy your contract first");
+    return;
+  }
+  const addressJson = fs.readFileSync(addressesFile);
+  const address = JSON.parse(addressJson);
+  console.log(address.Token);
+
+  const payment = await hre.ethers.getContractAt(contract, address.Token);
+  const instance = await payment.deployed();
+  const subs = await payment.getSubscriptions(false);
+  const isPayable = await payment.isRenewable(subscriptionId.toString());
+
   console.log("planType ", planType);
   console.log("planTypeInfos ", planTypeInfos.toString());  
   //console.log("subscriberAddress ", subscriberAddress.toString());
-
+  const session = {
+    type: planType, 
+    subscription: plan, 
+    targetUrl: planTypeInfos.toString(), 
+    duration: 0, 
+    frequency: parseInt(frequency), 
+    subscriptionId: subscriptionId.toString(),
+    subscriber: subscriber.toString(),
+    planId: planId.toString(),
+    token: token.toString(),
+  };
   switch(planType) {
     case '0':
       // Telegram
@@ -177,9 +254,8 @@ router.post('/validSubscription', async function(req, res, next) {
       date.setMonth(date.getMonth() + 12);
       try {
         bot.unbanChatMember(planTypeInfos, subscriberInfos);
-        const result = await bot.createChatInviteLink(planTypeInfos, {name: "Invitation from subscription of " + subscriber.toString()}, date.getTime(), 1)
-        console.log(result);
-        await writeSession(sessionId, {type: planType, subscription: plan, targetUrl: result.invite_link, duration: 0, frequency: parseInt(frequency), subscriptionId: subscriptionId.toString()});
+        const result = await bot.createChatInviteLink(planTypeInfos, session);
+        session.targetUrl = result.invite_link;
         res.json({type: planType, link: result.invite_link});
       } catch (e){
         res.json({error: e.message});
@@ -193,7 +269,7 @@ router.post('/validSubscription', async function(req, res, next) {
       // Http
     case '3':
       // Http by Duration
-      await writeSession(sessionId, {type: planType, subscription: plan, targetUrl: planTypeInfos.toString(), duration: 0, frequency: parseInt(frequency), subscriptionId: subscriptionId.toString()});
+      await writeSession(sessionId, session);
       res.json({type: planType, link: playerUrl});
       res.end();
       break;

@@ -5,6 +5,7 @@ const initialState = {
 
   // The info of the token (i.e. It's Name and symbol)
   tokenData: '',
+  tokens: undefined,
   // The user's address and balance
   selectedAddress: '',
   selectedNetwork: undefined,

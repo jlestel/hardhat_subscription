@@ -1,13 +1,14 @@
 pragma solidity ^0.8.6;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+
 //import "hardhat/console.sol";
 
 contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
-
     struct Plan {
         address merchant;
         address token;
@@ -18,7 +19,6 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         string planTypeInfos;
         string planName;
         string merchantName;
-        string tokenName;
     }
     struct Subscription {
         uint subscriptionId;
@@ -33,7 +33,7 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     uint public nextSubscriptionId;
 
     mapping(uint => Plan) public plans;
-    
+
     mapping(address => mapping(uint => Subscription)) public subscriptions;
     mapping(uint => Subscription) private _allSubscriptions;
 
@@ -77,7 +77,6 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         uint frequency,
         uint8 planType,
         string memory planTypeInfos,
-        string memory tokenName,
         string memory planName,
         string memory merchantName
     ) external {
@@ -93,8 +92,7 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             planType,
             planTypeInfos,
             planName,
-            merchantName,
-            tokenName
+            merchantName
         );
         nextPlanId++;
     }
@@ -122,29 +120,30 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     }
 
     function cancel(uint subscriptionId) external {
-        Subscription storage subscription = subscriptions[msg.sender][subscriptionId];
-        require(
-            subscription.subscriber != address(0),
-            "NE"
-        );
+        Subscription storage subscription = subscriptions[msg.sender][
+            subscriptionId
+        ];
+        require(subscription.subscriber != address(0), "NE");
         uint length = 0;
         for (uint i = 0; i <= nextSubscriptionId; i++) {
-          if (_allSubscriptions[i].subscriber == msg.sender) {
-            length += 1;
-          }
+            if (_allSubscriptions[i].subscriber == msg.sender) {
+                length += 1;
+            }
         }
         delete subscriptions[msg.sender][subscriptionId];
         delete _allSubscriptions[subscriptionId];
     }
 
-    function pay(address subscriber, uint subscriptionId) external {
-        Subscription storage subscription = subscriptions[subscriber][
-            subscriptionId
-        ];
-        require(subscription.subscriber != address(0),"NE");
+    function pay(uint subscriptionId) external {
+        Subscription storage subscription = _allSubscriptions[subscriptionId];
+        require(subscription.subscriber != address(0), "NE");
         require(block.timestamp > subscription.nextPayment, "NOT_DUE");
         Plan storage plan = plans[subscription.planId];
-        IERC20(plan.token).transferFrom(subscriber, plan.merchant, plan.amount);
+        IERC20(plan.token).transferFrom(
+            subscription.subscriber,
+            plan.merchant,
+            plan.amount
+        );
         subscription.nextPayment = subscription.nextPayment + plan.frequency;
     }
 
@@ -152,48 +151,61 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         uint length = 0;
         for (uint i = 0; i <= nextPlanId; i++) {
             if (onlyMine) {
-              if (plans[i].merchant == msg.sender) {
-                length += 1;
-              }
+                if (plans[i].merchant == msg.sender) {
+                    length += 1;
+                }
             } else {
-              if (plans[i].merchant != address(0)) {
-                length += 1;
-              }
+                if (plans[i].merchant != address(0)) {
+                    length += 1;
+                }
             }
-        }      
+        }
         Plan[] memory myMessages = new Plan[](length);
+        uint y = 0;
         for (uint256 index = 0; index < nextPlanId; index++) {
             if (plans[index].merchant != address(0)) {
-              if (!onlyMine || (onlyMine && plans[index].merchant == msg.sender)) {
-                myMessages[index] = plans[index];
-              }
+                if (
+                    !onlyMine ||
+                    (onlyMine && plans[index].merchant == msg.sender)
+                ) {
+                    myMessages[y] = plans[index];
+                    y += 1;
+                }
             }
         }
         return myMessages;
     }
 
-    function getSubscriptions(bool onlyMine) public view returns (Subscription[] memory) {
+    function getSubscriptions(bool onlyMine)
+        public
+        view
+        returns (Subscription[] memory)
+    {
         uint length = 0;
         for (uint i = 0; i <= nextSubscriptionId; i++) {
             if (onlyMine) {
-              if (_allSubscriptions[i].subscriber == msg.sender) {
-                length += 1;
-              }
+                if (_allSubscriptions[i].subscriber == msg.sender) {
+                    length += 1;
+                }
             } else {
-              if (_allSubscriptions[i].subscriber != address(0)) {
-                length += 1;
-              }
+                if (_allSubscriptions[i].subscriber != address(0)) {
+                    length += 1;
+                }
             }
         }
         Subscription[] memory mySubscriptions = new Subscription[](length);
         uint y = 0;
         for (uint256 index = 0; index < nextSubscriptionId; index++) {
             if (_allSubscriptions[index].subscriber != address(0)) {
-              if (!onlyMine || (onlyMine && _allSubscriptions[index].subscriber == msg.sender)) {
-                mySubscriptions[y] = _allSubscriptions[index];
-                y += 1;
-              }
-            }  
+                if (
+                    !onlyMine ||
+                    (onlyMine &&
+                        _allSubscriptions[index].subscriber == msg.sender)
+                ) {
+                    mySubscriptions[y] = _allSubscriptions[index];
+                    y += 1;
+                }
+            }
         }
         return mySubscriptions;
     }
@@ -201,12 +213,41 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     function isPayable(uint planId) public view returns (bool success) {
         require(plans[planId].merchant != address(0), "NE");
         return
-            IERC20(plans[planId].token).allowance(msg.sender, address(this)) > plans[planId].amount &&
-            IERC20(plans[planId].token).balanceOf(msg.sender) > plans[planId].amount;
+            IERC20(plans[planId].token).allowance(msg.sender, address(this)) >
+            plans[planId].amount &&
+            IERC20(plans[planId].token).balanceOf(msg.sender) >
+            plans[planId].amount;
     }
 
     function allowance(uint planId) public view returns (uint success) {
         require(plans[planId].merchant != address(0), "NE");
         return IERC20(plans[planId].token).allowance(msg.sender, address(this));
+    }
+
+    function isRenewable(uint subscriptionId) public view returns (bool success) {
+        require(
+            _allSubscriptions[subscriptionId].subscriber != address(0),
+            "NE"
+        );
+        require(plans[_allSubscriptions[subscriptionId].planId].merchant != address(0), "NE");
+        require(IERC20(plans[_allSubscriptions[subscriptionId].planId].token).allowance(_allSubscriptions[subscriptionId].subscriber, address(this)) >
+            plans[_allSubscriptions[subscriptionId].planId].amount, "AMOUNT_NOT_ALLOWED");
+        require(IERC20(plans[_allSubscriptions[subscriptionId].planId].token).balanceOf(_allSubscriptions[subscriptionId].subscriber) >
+            plans[_allSubscriptions[subscriptionId].planId].amount, "AMOUNT_NIN_BALANCE");
+        return
+            IERC20(plans[_allSubscriptions[subscriptionId].planId].token).allowance(_allSubscriptions[subscriptionId].subscriber, address(this)) >
+            plans[_allSubscriptions[subscriptionId].planId].amount &&
+            IERC20(plans[_allSubscriptions[subscriptionId].planId].token).balanceOf(_allSubscriptions[subscriptionId].subscriber) >
+            plans[_allSubscriptions[subscriptionId].planId].amount;
+    }
+
+    function balance(uint subscriptionId) public view returns (uint success) {
+        require(
+            _allSubscriptions[subscriptionId].subscriber != address(0),
+            "NE"
+        );
+        return
+            IERC20(plans[_allSubscriptions[subscriptionId].planId].token)
+                .balanceOf(_allSubscriptions[subscriptionId].subscriber);
     }
 }

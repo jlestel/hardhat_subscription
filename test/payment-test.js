@@ -51,14 +51,14 @@ describe("Payment", function() {
     
     //console.log("payment deployed to:", payment.address);
 
-    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'BUSD', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
+    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
     const plan1 = await payment.plans(0);
 //    console.log(plan1)
     expect(plan1.token).to.equal(token.address);
     expect(plan1.amount.toString()).to.equal('100');
     expect(plan1.frequency.toString()).to.equal('30');
 
-    await payment.createPlan(token.address, 200, 60, 2, 'https://www.google.fr', 'BUSD', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
+    await payment.createPlan(token.address, 200, 60, 2, 'https://www.google.fr', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
     const plan2 = await payment.plans(1);
     expect(plan2.token).to.equal(token.address);
     expect(plan2.amount.toString()).to.equal('200'); 
@@ -67,18 +67,18 @@ describe("Payment", function() {
 
   it('should NOT create a plan', async () => {
     await expect(
-      payment.createPlan(constants.ZERO_ADDRESS, 100, 30, 0, '1664553005', 'BUSD', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address})
+      payment.createPlan(constants.ZERO_ADDRESS, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address})
     ).to.be.revertedWith('address cannot be null address');
     await expect(
-      payment.createPlan(token.address, 0, 30, 0, '1664553005', 'BUSD', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address})
+      payment.createPlan(token.address, 0, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address})
     ).to.be.revertedWith('amount needs to be > 0');
     await expect(
-      payment.createPlan(token.address, 100, 0, 0, '1664553005', 'BUSD', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address})
+      payment.createPlan(token.address, 100, 0, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address})
     ).to.be.revertedWith('frequency needs to be > 0');
   });
 
   it('should create a subscription', async () => {
-    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'BUSD', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
+    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
     //await network.provider.send("evm_mine");
     [deployer, sub] = await ethers.getSigners();
     await network.provider.send("evm_mine");
@@ -110,7 +110,7 @@ describe("Payment", function() {
 
   it('should subscribe and pay', async () => {
     let balanceMerchant, balancesub;
-    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'BUSD', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
+    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
 
     const tx = await payment.connect(sub).subscribe(0, {from: sub.address});
     const block = await tx.wait();
@@ -120,13 +120,13 @@ describe("Payment", function() {
     expect(balancesub.toString()).to.equal('1000');
 
     /*expect(
-      payment.connect(sub).pay(sub.address, 0)
+      payment.connect(sub).pay(0)
     ).to.be.revertedWith('not due yet');*/
       
     const ts = await increase(31 * 1000);
     console.log(ts);
     
-    await payment.connect(sub).pay(sub.address, block.events[2].args.subscription.subscriptionId.toString());
+    await payment.connect(sub).pay(block.events[2].args.subscription.subscriptionId.toString());
     balanceMerchant = await token.balanceOf(merchant.address); 
     balancesub = await token.balanceOf(sub.address); 
     expect(balanceMerchant.toString()).to.equal('999999999999999999999100');
@@ -134,7 +134,7 @@ describe("Payment", function() {
 
     await increase(31 * 1000);
 
-    await payment.connect(sub).pay(sub.address, block.events[2].args.subscription.subscriptionId.toString());
+    await payment.connect(sub).pay(block.events[2].args.subscription.subscriptionId.toString());
     balanceMerchant = await token.balanceOf(merchant.address); 
     balancesub = await token.balanceOf(sub.address); 
     expect(balanceMerchant.toString()).to.equal('999999999999999999999200');
@@ -143,18 +143,18 @@ describe("Payment", function() {
 
   
   it('should subscribe and NOT pay', async () => {
-    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'BUSD', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
+    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
 
     const tx = await payment.connect(sub).subscribe(0, {from: sub.address});
     const block = await tx.wait();
     //await increase(10 * 1000);
     await expect(
-      payment.connect(sub).pay(sub.address, block.events[2].args.subscription.subscriptionId.toString())
+      payment.connect(sub).pay(block.events[2].args.subscription.subscriptionId.toString())
     ).to.be.revertedWith('not due yet');
   });
 
   it('should cancel subscription', async () => {
-    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'BUSD', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
+    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
     const tx = await payment.connect(sub).subscribe(0, {from: sub.address});
     const block = await tx.wait();
     let subscription1 = await payment.connect(sub).getSubscriptions(true, {from: sub.address});

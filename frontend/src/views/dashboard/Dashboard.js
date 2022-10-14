@@ -15,6 +15,7 @@ import {
   cilChartPie,
   cilDollar,
 } from '@coreui/icons'
+import Faucet from './Faucet'
 
 const Dashboard = () => {
   const selectedAddress = useSelector((state) => state.selectedAddress)
@@ -25,6 +26,7 @@ const Dashboard = () => {
   return (
     <>
       <h4>Welcome {selectedAddress} !</h4>
+      <Faucet />
       <CRow>
       <CCol xs={6}>
         <CWidgetStatsF
