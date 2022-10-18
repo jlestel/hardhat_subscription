@@ -13,16 +13,16 @@ require("./tasks/faucet");
 require("./tasks/rebill");
 require("./tasks/kickUnpaid");
 
-// Go to https://www.alchemyapi.io, sign up, create
-// a new App in its dashboard, and replace "KEY" with its key
-//const ALCHEMY_API_KEY = "8eb9cb2c14a541c7833e07c3192bb6db";
-const ALCHEMY_API_KEY = "8eb9cb2c14a541c7833e07c3192bb6db";
+const ALCHEMY_GOERLI_API_KEY = "s_7N0dmQWg2x-ZZ3zZsQEzC0aM5F01mI";
+const ALCHEMY_MUMBAY_API_KEY = "O5QqGlDXFYuko1squ-_1tsuxINrqtUa9";
 
 // Replace this private key with your Goerli account private key
 // To export your private key from Metamask, open Metamask and
 // go to Account Details > Export Private Key
 // Beware: NEVER put real Ether into testing accounts
-const GOERLI_PRIVATE_KEY = "730d1e14cc723f319e730ca9fa69be76b5129160615050123c1bbc8d3dd1a173";
+const PRIVATE_KEY_OWNER = "730d1e14cc723f319e730ca9fa69be76b5129160615050123c1bbc8d3dd1a173";
+const PRIVATE_KEY_TESTER = "272c3de52e6820355fe05f05a590bb8938e11b39aa66712656189406feac76b0";
+const PRIVATE_KEY_TESTER2 = "ef3ff9910e6771992f0d0856fa04f01fbf90bcba0c0ce441ef3764720980f4fd";
 
 // Faucets: https://faucets.chain.link/
 
@@ -38,12 +38,26 @@ module.exports = {
       //allowUnlimitedContractSize: true,
     },
     goerli: {
+      url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_GOERLI_API_KEY}`,
+      accounts: [PRIVATE_KEY_OWNER, PRIVATE_KEY_TESTER, PRIVATE_KEY_TESTER2],
+      gas: 'auto',
+      gasPrice: 'auto',
+      gasMultiplier: 2
+    },
+    mumbai: {
+      url: `https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_MUMBAY_API_KEY}`,
+      accounts: [PRIVATE_KEY_OWNER, PRIVATE_KEY_TESTER, PRIVATE_KEY_TESTER2],
+      gas: 'auto',
+      gasPrice: 'auto',
+      gasMultiplier: 2
+    },
+    /*goerli: {
       url: `https://goerli.infura.io/v3/${ALCHEMY_API_KEY}`,
       accounts: [GOERLI_PRIVATE_KEY],
       gas: 'auto',
       gasPrice: 'auto',
       gasMultiplier: 2
-    }
+    }*/
   },
   etherscan: {
     // Your API key for Etherscan

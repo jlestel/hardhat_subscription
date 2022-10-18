@@ -35,8 +35,7 @@ import { connectWallet, reset } from "../Dapp";
 
 const AppHeaderDropdown = () => {
   const selectedAddress = useSelector((state) => state.selectedAddress)
-  const balance = useSelector((state) => state.balance)
-  const tokenData = useSelector((state) => state.tokenData)
+  //const tokens = useSelector((state) => state.tokens)
   const subscriptions = useSelector((state) => state.subscriptions)
   const plans = useSelector((state) => state.plans)
   const selectedNetwork = useSelector((state) => state.selectedNetwork)
@@ -49,7 +48,7 @@ const AppHeaderDropdown = () => {
         <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
           <CButton type="submit"
             onClick={(e) => {
-              connectWallet(dispatch)
+              if (!selectedAddress) connectWallet(dispatch);
             }}>
             <CIcon icon={selectedAddress ? cilCheck : cilLockLocked} className="me-2" />
             {!selectedAddress && ("Connect Wallet")}
@@ -83,16 +82,7 @@ const AppHeaderDropdown = () => {
           </CDropdownItem>
           <CDropdownDivider />
           <CDropdownHeader className="bg-light fw-semibold py-2">@ {selectedAddress && (selectedAddress.toString().substr(1, 30)+'...')}</CDropdownHeader>
-          <CDropdownItem href="#" onClick={(e) => {
-            if (selectedAddress)
-              reset()
-            else
-              connectWallet(dispatch)
-          }}>
-            <CIcon icon={cilLockLocked} className="me-2" />
-            {!selectedAddress && ("Connect Wallet")}
-            {selectedAddress && ("Disconnect Wallet")}
-          </CDropdownItem>
+          <CDropdownHeader className="bg-light fw-semibold py-2">Use Metamask to disconnect</CDropdownHeader>
         </CDropdownMenu>
       </CDropdown>
       {selectedNetwork && selectedNetwork !== undefined && (

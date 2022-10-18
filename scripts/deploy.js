@@ -2,6 +2,7 @@
 // yours, or create new ones.
 const { ethers, upgrades } = require("hardhat");
 const path = require("path");
+const bn = require("big-integer");
 
 async function main() {
 
@@ -27,7 +28,7 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   const Payment = await hre.ethers.getContractFactory("PaymentV1");
-  const payment = await upgrades.deployProxy(Payment, [], /*{
+  const payment = await upgrades.deployProxy(Payment, [], { kind: 'uups' }/*{
     deployer,
     kind: "uups",
   }*/);
@@ -50,45 +51,66 @@ async function main() {
   tokenbis.attach(payment.address);
   
   console.log("Create plan");
-  let transaction = await payment.createPlan(tokenbis.address, 30, 600, 0, '-1001664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: address});
+  let transaction = await payment.connect(first).createPlan(tokenbis.address, bn(300 * Math.pow(10, 18)).toString(), 600, 0, '-1001664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: first.address});
   console.log("Plan created");
   await transaction.wait();
-  transaction = await payment.createPlan(tokenbis.address, 15, 600, 2, 'https://www.google.com', 'Accès contenu Web privé - Abonnement toute les 10 minutes', 'Marchant Contenus Web',  {from: address});
+  transaction = await payment.connect(first).createPlan(tokenbis.address, bn(15 * Math.pow(10, 18)).toString(), 600, 2, 'https://www.google.com', 'Accès contenu Web privé - Abonnement toute les 10 minutes', 'Marchant Contenus Web',  {from: first.address});
   await transaction.wait();
   console.log("Create plan");
-  transaction = await payment.createPlan(token.address, 100, 60, 3, 'https://randomuser.me', 'Accès contenu Web privé - By duration à la minute', 'Marchant Contenus Web',  {from: address});
+  transaction = await payment.connect(first).createPlan(token.address, bn(100 * Math.pow(10, 18)).toString(), 60, 3, 'https://randomuser.me', 'Accès contenu Web privé - By duration à la minute', 'Marchant Contenus Web',  {from: first.address});
+  await transaction.wait();
+  transaction = await token.connect(deployer).approve(payment.address, bn(1000000 * Math.pow(10, 18)).toString());
+  console.log("End approve");
+  await transaction.wait();
+  transaction = await tokenbis.connect(deployer).approve(payment.address, bn(1000000 * Math.pow(10, 18)).toString());
+  console.log("End approve");
+  await transaction.wait();
+    transaction = await token.connect(first).approve(payment.address, bn(1000000 * Math.pow(10, 18)).toString());
+  console.log("End approve");
+  await transaction.wait();
+  transaction = await tokenbis.connect(first).approve(payment.address, bn(1000000 * Math.pow(10, 18)).toString());
+  console.log("End approve");
   await transaction.wait();
   
-  if (network.name === "localhost") {
+  //if (network.name === "localhost") {
     console.log("Create plan duration 15 seconds");
-    transaction = await payment.createPlan(token.address, 1, 15, 3, 'https://www.google.com', 'google - By duration', 'Marchant',  {from: address});
+    transaction = await payment.createPlan(token.address, bn(15 * Math.pow(10, 18)).toString(), 15, 3, 'https://www.google.com', 'google - By duration', 'Marchant',  {from: address});
     await transaction.wait();
     console.log("End create plan");
-    transaction = await token.transfer(first.address, 100000); 
+    transaction = await token.transfer(first.address, bn(100000 * Math.pow(10, 18)).toString()); 
+    console.log("End transfer");
     await transaction.wait();
-    transaction = await token.connect(first).approve(payment.address, 100000);
+    transaction = await token.connect(first).approve(payment.address, bn(100000 * Math.pow(10, 18)).toString());
+    console.log("End approve");
     await transaction.wait();
-    transaction = await token.transfer(second.address, 100000);
+    transaction = await token.transfer(second.address, bn(100000 * Math.pow(10, 18)).toString());
+    console.log("End transfer");
     await transaction.wait();
-    transaction = await token.connect(second).approve(payment.address, 100000);
+    transaction = await token.connect(second).approve(payment.address, bn(100000 * Math.pow(10, 18)).toString());
+    console.log("End connect 2");
     await transaction.wait();
-    transaction = await tokenbis.transfer(first.address, 50000);
+    transaction = await tokenbis.transfer(first.address, bn(50000 * Math.pow(10, 18)).toString());
+    console.log("End transfert 2");
     await transaction.wait();
-    transaction = await tokenbis.connect(first).approve(payment.address, 50000);
+    transaction = await tokenbis.connect(first).approve(payment.address, bn(50000 * Math.pow(10, 18)).toString());
+    console.log("End approve 2");
     await transaction.wait();
-    transaction = await tokenbis.transfer(second.address, 50000);
+    transaction = await tokenbis.transfer(second.address, bn(50000 * Math.pow(10, 18)).toString());
     await transaction.wait();
-    transaction = await tokenbis.connect(second).approve(payment.address, 50000);
+    transaction = await tokenbis.connect(second).approve(payment.address, bn(50000 * Math.pow(10, 18)).toString());
+    console.log("last approve");
     await transaction.wait();
     transaction = await payment.connect(first).subscribe(0, '5275712273', {from: first.address});
+    console.log("subscribe");
     await transaction.wait();
     transaction = await payment.connect(first).subscribe(1, '', {from: first.address});
     await transaction.wait();
-    transaction = await payment.connect(first).subscribe(2, '', {from: first.address});
+    console.log("end subscribe");
+    /*transaction = await payment.connect(first).subscribe(2, '', {from: first.address});
     await transaction.wait();
     transaction = await payment.connect(first).subscribe(3, '', {from: first.address});
-    await transaction.wait();
-  }
+    await transaction.wait();*/
+  //}
   //await payment.connect(second).subscribe(0, '5275712273', {from: second.address});
   //await payment.connect(second).subscribe(1, '', {from: second.address});
   //await payment.connect(deployer).subscribe(0, '5275712273', {from: first.address});
@@ -99,6 +121,7 @@ async function main() {
   saveFrontendFiles(token, "Token", network.name);
   saveFrontendFiles(tokenbis, "TokenBis", network.name);
   saveFrontendFiles(payment, "PaymentV1", network.name);
+  console.log("end save");
   /*saveFrontendFiles(token, "Token", network.name);
   saveFrontendFiles(tokenbis, "TokenBis", network.name);
   saveFrontendFiles(payment, "PaymentV1", network.name);*/

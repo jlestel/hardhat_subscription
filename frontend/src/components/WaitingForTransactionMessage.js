@@ -6,7 +6,7 @@ export function WaitingForTransactionMessage({}) {
   const txBeingSent = useSelector((state) => state.txBeingSent)
 
   return txBeingSent && (
-    <CAlert color="primary" dismissible>
+    <CAlert color="primary">
       <CSpinner color="primary" size="sm"/>&nbsp;
       Waiting for transaction to be mined...
     </CAlert>

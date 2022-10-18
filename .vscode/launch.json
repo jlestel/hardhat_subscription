@@ -47,6 +47,21 @@
         "cwd": "${workspaceFolder}/frontend/"
       },
       {
+        "name": "Launch Chrome",
+        "request": "launch",
+        "type": "pwa-chrome",
+        "url": "http://hardhat.local",
+        "webRoot": "${workspaceFolder}/frontend/"
+    },
+      {
+        "name": "debug front to Chrome",
+        "port": 9222,
+        "request": "attach",
+        "type": "pwa-chrome",
+        "urlFilter": "http://localhost:3000/*", // use urlFilter instead of url!
+        "webRoot": "${workspaceFolder}/frontend"
+      },
+      {
         "type": "pwa-node",
         "request": "launch",
         "name": "api",
@@ -56,8 +71,10 @@
         "cwd": "${workspaceFolder}/api/",
         "env": {
           "HARDHAT_NETWORK": "localhost",
+          "ALCHEMY_APP_API_KEY_GOERLI": "s_7N0dmQWg2x-ZZ3zZsQEzC0aM5F01mI",
+          "ALCHEMY_APP_API_KEY_MUMBAI": "O5QqGlDXFYuko1squ-_1tsuxINrqtUa9",
           "PLAYER_API": "http://localhost:3001",
-          "NETWORKS": "5,1337"
+          "NETWORKS": "5,1337,80001"
         }
       },
       {
@@ -96,6 +113,24 @@
       {
         "type": "pwa-node",
         "request": "launch",
+        "name": "hardhat deploy Mumbai",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat" ,"run" ,"scripts/deploy.js" ,"--network", "mumbai"],
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "hardhat deploy mumbai upgrade V2",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat" ,"run" ,"scripts/deploy-upgrade.js" ,"--network", "mumbai"],
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
         "name": "hardhat deploy GoerliETH",
         "skipFiles": ["<node_internals>/**"],
         "runtimeExecutable": "/opt/homebrew/bin/npx",
@@ -109,6 +144,15 @@
         "skipFiles": ["<node_internals>/**"],
         "runtimeExecutable": "/opt/homebrew/bin/npx",
         "args": ["hardhat" ,"run" ,"scripts/deploy-upgrade.js" ,"--network", "goerli"],
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "rebill mumbai",
+        "skipFiles": ["<node_internals>/**"],
+        "runtimeExecutable": "/opt/homebrew/bin/npx",
+        "args": ["hardhat" ,"--network" ,"mumbai" ,"rebill"],
         "cwd": "${workspaceFolder}"
       },
       {

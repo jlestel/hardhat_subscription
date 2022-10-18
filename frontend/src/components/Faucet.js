@@ -1,23 +1,10 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Subscribe } from '../../components/Subscribe'
-import { Subscriptions } from '../../components/Subscriptions'
-import { SubscriptionResult } from '../../components/SubscriptionResult'
-import { faucets } from "../../components/Dapp";
+import { faucets } from "./Dapp";
 
 import {
-  CCol,
   CButton,
-  CWidgetStatsF,
-  CRow,
-  CLink,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import {
-  cilArrowRight,
-  cilChartPie,
-  cilDollar,
-} from '@coreui/icons'
 
 import { useState } from "react";
 
@@ -29,19 +16,23 @@ const Faucet = () => {
   
   return (
     <>
-    {selectedNetwork && selectedNetwork.networkName && (
+    {selectedNetwork && selectedNetwork.networkName && 
+    (selectedNetwork.networkId == '5' || selectedNetwork.networkId == '1337')
+     && (
       <div className="container">
       <div className="row justify-content-md-center">
         <div className="text-center">
-          <h4>Don&apos;t have tokens to try in your Wallet?</h4>
+          <h4>No tokens in your Wallet,</h4>
 
-          {isUsed && ("You will receive soon faucets...")}
+          {isUsed && ("You will receive soon test tokens...")}
           {!isUsed && (
             <>
-            Ask for a faucet now &nbsp; <CButton type="submit" onClick={(e) => {
+            you can ask for a faucet now, we&apos;ll send you some tokens and ether to try !
+            <br/>
+            <CButton type="submit" onClick={(e) => {
               faucets(selectedAddress);
               setIsUsed(true);
-            }} disabled={isUsed}>Send Request</CButton>
+            }} disabled={isUsed}>Send me some tokens please !</CButton>
             </>
           )}
         </div>

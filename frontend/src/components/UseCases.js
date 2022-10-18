@@ -35,7 +35,6 @@ export function UseCases({ }) {
       <CRow xs={{ cols: 1, gutter: 4 }} md={{ cols: 3 }}>
       <CCol xs>
           <CCard>
-            <CCardImage orientation="top" src={require('./../assets/images/vue.jpg')} />
             <CCardBody>
               <CCardTitle>Web content recurring payments</CCardTitle>
               <CCardText>
@@ -52,7 +51,6 @@ export function UseCases({ }) {
         </CCol>
         <CCol xs>
           <CCard>
-            <CCardImage orientation="top" src={require('./../assets/images/angular.jpg')} />
             <CCardBody>
               <CCardTitle>Telegram/Discord VIP Subscriptions</CCardTitle>
               <CCardText>
@@ -69,7 +67,6 @@ export function UseCases({ }) {
         </CCol>
         <CCol xs>
           <CCard>
-            <CCardImage orientation="top" src={require('./../assets/images/react.jpg')} />
             <CCardBody>
               <CCardTitle>Make transaction to an address every X days</CCardTitle>
               <CCardText>
@@ -86,7 +83,6 @@ export function UseCases({ }) {
         </CCol>
         <CCol xs>
           <CCard>
-            <CCardImage orientation="top" src={require('./../assets/images/react.jpg')} />
             <CCardBody>
               <CCardTitle>SaaS / Ecommerce recurring payments</CCardTitle>
               <CCardText>
@@ -103,7 +99,6 @@ export function UseCases({ }) {
         </CCol>
         <CCol xs>
           <CCard>
-            <CCardImage orientation="top" src={require('./../assets/images/angular.jpg')} />
             <CCardBody>
               <CCardTitle>Payment by duration</CCardTitle>
               <CCardText>
@@ -120,7 +115,6 @@ export function UseCases({ }) {
         </CCol>
         <CCol xs>
           <CCard>
-            <CCardImage orientation="top" src={require('./../assets/images/vue.jpg')} />
             <CCardBody>
               <CCardTitle>Loyalty card subscriptions</CCardTitle>
               <CCardText>

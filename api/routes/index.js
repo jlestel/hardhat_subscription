@@ -66,7 +66,7 @@ async function proxyRequest(clientRequest, clientResponse) {
         });
         serverResponse.on('end', function () {
           // Make changes to HTML files when they're done being read.
-          const plan = 'PayPerBlock.xyz : ' + (session ? session.subscription : 'Pas de session');
+          const plan = session ? session.subscription : 'Pas de session';
           body = body.replace('</body>', '<div style=" background: #84baff; line-height: 2; text-align: center; color: #FFFF; font-size: 30px; font-family: sans-serif; font-weight: bold; text-shadow: 0 1px 0 #84BAFF; box-shadow: 0 0 15px #00214B; position: fixed; bottom: 0px;width: 100%;">'+
           plan
           +' - <a href="http://localhost:3000/">Close</a></div>');

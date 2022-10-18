@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   CButton,
 } from '@coreui/react'
@@ -12,12 +12,18 @@ import { connectWallet } from "./Dapp";
 
 export function ConnectWallet({ }) {
   const networkError = useSelector((state) => state.networkError)
+  const [first, setFirst] = useState(null);
   //const store = useStore()
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('networkError', networkError)
+    //console.log('networkError', networkError, first);
+
+    if (!first) {
+      setFirst(true);
+      connectWallet(dispatch);
+    }
   });
 
   return (

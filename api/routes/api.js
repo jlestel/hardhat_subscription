@@ -16,6 +16,7 @@ const fetch = require('node-fetch');
 
 const hre = require("hardhat");
 const fs = require("fs");
+const { Contract } = require('ethers');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
@@ -57,10 +58,11 @@ router.get('/refresh', async function(req, res, next) {
       const addressJson = fs.readFileSync(addressesFile);
       const address = JSON.parse(addressJson);
       console.log(address.Token);
-
+      // TODO: utiliser alchemy
       const payment = await hre.ethers.getContractAt(contract, address.Token);
       //const instance = await payment.deployed();
       balance = await payment.balance(session.subscriptionId.toString());
+      balance = parseFloat(parseInt(balance) / Math.pow(10, session.decimals)).toFixed(2);
       
       if (session && session.type && session.type.toString() == '3') {
         if (!session.duration)
@@ -79,7 +81,7 @@ router.get('/refresh', async function(req, res, next) {
             payment.pay(session.subscriptionId.toString(), { gasLimit: 150000});
             //const tx = await payment.pay(session.subscriptionId.toString(), { gasLimit: 150000});
             //const receipt = await tx.wait();
-            //balance = await payment.balance(session.subscriptionId.toString());
+            balance -= parseInt(session.amount) / Math.pow(10, session.decimals);
             console.log("Renewed !");
             session.duration = 0;
           } else {
@@ -183,7 +185,7 @@ router.post('/validPlan', async function(req, res, next) {
         // Http by Duration
         const response = await fetch(planTypeInfos);
         console.log("response.status ",response.status);
-        if (response.status == 200) {
+        if (response.status === 200) {
           res.json({valid: true, url: planTypeInfos});
         } else {
           res.json({valid: false, error: 'Invalid response status: ' + response.status});
@@ -209,6 +211,7 @@ router.post('/validSubscription', async function(req, res, next) {
   const token = req.body.token.toString();
   const planType = req.body.planType.toString();
   const frequency = req.body.frequency.toString();
+  const amount = req.body.amount.toString();
   const planTypeInfos = req.body.planTypeInfos;
   const subscriber = req.body.subscriber;
   const subscriberInfos = req.body.subscriberInfos;
@@ -219,19 +222,20 @@ router.post('/validSubscription', async function(req, res, next) {
   const network = process.env.HARDHAT_NETWORK;
   const contract = "PaymentV1";
   
-  const addressesFile = __dirname + "/../contracts/"+network+"/contract-"+contract+"-address.json";
+  const addressesFile = __dirname + "/../contracts/Sample.json";
   if (!fs.existsSync(addressesFile)) {
     console.error("You need to deploy your contract first");
     return;
   }
   const addressJson = fs.readFileSync(addressesFile);
   const address = JSON.parse(addressJson);
-  console.log(address.Token);
 
-  const payment = await hre.ethers.getContractAt(contract, address.Token);
-  const instance = await payment.deployed();
-  const subs = await payment.getSubscriptions(false);
-  const isPayable = await payment.isRenewable(subscriptionId.toString());
+  //const tokenContract = await hre.ethers.getContractAt();
+  // TODO: remplacer par alchemy 
+  const [sender] = await hre.ethers.getSigners();
+  const tokenContract = new Contract(token.toString(), address.abi, sender);
+  const symbol = await tokenContract.symbol();
+  const decimals = await tokenContract.decimals();
 
   console.log("planType ", planType);
   console.log("planTypeInfos ", planTypeInfos.toString());  
@@ -242,10 +246,12 @@ router.post('/validSubscription', async function(req, res, next) {
     targetUrl: planTypeInfos.toString(), 
     duration: 0, 
     frequency: parseInt(frequency), 
+    amount: amount.toString(), 
     subscriptionId: subscriptionId.toString(),
     subscriber: subscriber.toString(),
     planId: planId.toString(),
-    token: token.toString(),
+    token: symbol.toString(),
+    decimals: parseInt(decimals),
   };
   switch(planType) {
     case '0':

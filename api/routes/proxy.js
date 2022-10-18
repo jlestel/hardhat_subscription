@@ -71,12 +71,16 @@ async function proxyRequest(clientRequest, clientResponse) {
         serverResponse.on('end', function () {
           // Make changes to HTML files when they're done being read.
           const player = fs.readFileSync(path.join(__dirname, '../player/inject.html'));
-          const plan = 'PayPerBlock.xyz : ' + (session ? session.subscription : 'Pas de session');
+          const plan = session ? session.subscription : 'Pas de session';
           body = body.replace('</body>', player.toString()
             .replace(new RegExp('{{plan}}', 'g'), plan)
             .replace(RegExp('{{domain}}', 'g'), 'https://payperblock.citio.digital/#/subscription/list')
+            .replace(RegExp('{{byDuration}}', 'g'), session.type.toString() == '3' ? 'true' : 'false')
             .replace(RegExp('{{session}}', 'g'), keySession)
             .replace(RegExp('{{api}}', 'g'), process.env.PLAYER_API)
+            .replace(RegExp('{{token}}', 'g'), (session ? session.token : ''))
+            .replace(RegExp('{{amount}}', 'g'), (session ? parseInt(session.amount) / Math.pow(10, session.decimals) : ''))
+            .replace(RegExp('{{frequency}}', 'g'), (session && session.frequency > 0 ? ' each ' + session.frequency + ' seconds' : ''))
           );
           console.log(serverResponse.statusCode, serverResponse.headers);
           clientResponse.writeHead(serverResponse.statusCode, serverResponse.headers);

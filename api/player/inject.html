@@ -1,15 +1,32 @@
 <div
-    style=" z-index: 999999999; background: #84baff; line-height: 2; text-align: center; color: #FFFF; font-size: 30px; font-family: sans-serif; font-weight: bold; text-shadow: 0 1px 0 #84BAFF; box-shadow: 0 0 15px #00214B; position: fixed; bottom: 0px;width: 100%;">
+    style="
+        z-index: 999999999;
+        background: #2c2e31;
+        line-height: 2;
+        text-align: left;
+        color: #FFFF;
+        font-size: 23px;
+        font-family: revert;
+        box-shadow: 0 0 15px #00214b;
+        position: fixed;
+        bottom: 0px;
+        width: 100%;
+        height: 55px;
+        padding-left: 20px;
+    ">
     {{plan}} - 
-    <b id="timePpb" style="font-size: 24px;"></b>
-    <b id="balancePpb" style="font-size: 24px;"></b>
+    <b id="paymentPpb" style="font-size: 24px;">({{amount}} {{token}} {{frequency}})</b>
+    <b id="timePpb" style="font-size: 24px;float: right;padding-right: 110px;"></b>
+    <b id="balancePpb" style="font-size: 24px;float: right;padding-right: 20px;"></b>
     <a id="closePpb" href="{{domain}}" style="position: fixed;right: 20px;font-size: 24 !important; color: #FFF;">Close</a>
 </div> 
 <script type="text/javascript">
     var iPpbSeconds = 0;
     var bPpbInit = false;
     const iPpbRefreshTime = 1000;
-    const iPpbCheckTime = 15000;
+    const iPpbCheckTime = 10000;
+    const bPpbByDuration = {{byDuration}};
+    
     function doDate() {
         iPpbSeconds+= iPpbRefreshTime;
         let d = parseInt(iPpbSeconds / iPpbRefreshTime);
@@ -34,9 +51,10 @@
         }
         bPpbInit = true;
     }
-
-    setInterval(doDate, iPpbRefreshTime);
-    doDate();
+    if (bPpbByDuration) {
+        setInterval(doDate, iPpbRefreshTime);
+        doDate();
+    }
 
     function reqListener () {
       console.log(this.responseText);
@@ -47,7 +65,7 @@
           return;
       }
       let balance = document.getElementById('balancePpb');
-      balance.innerHTML = `Balance: ` + res.balance;
+      balance.innerHTML = `Balance: ` + res.balance + ' {{token}}';
     }
 </script>   
 </body>

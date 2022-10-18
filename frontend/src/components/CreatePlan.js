@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import { createPlan, validPlan } from "./Dapp";
 import { TransactionErrorMessage } from "./TransactionErrorMessage";
 import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
-
 import {
   CAlert,
   CFormSelect,
@@ -16,41 +15,24 @@ import {
   CFormInput,
   CFormCheck,
   CFormSwitch,
-} from '@coreui/react'
- 
+} from '@coreui/react';
+import bigInt  from "big-integer";
+
 export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
 
-  const [renew, setRenew] = useState(null);
-  const [planType, setPlanType] = useState(null);
-  const [duration, setDuration] = useState(null);
+  const [renew, setRenew] = useState(true);
+  const [planType, setPlanType] = useState('');
+  const [duration, setDuration] = useState('86400');
   const [token, setToken] = useState(null);
 
   const plans = useSelector((state) => state.plans)
   const selectedAddress = useSelector((state) => state.selectedAddress)
   const selectedNetwork = useSelector((state) => state.selectedNetwork)
+  const tokens = useSelector((state) => state.tokens)
   const isValidPlan = useSelector((state) => state.isValidPlan)
   const dispatch = useDispatch()
+  const bn = bigInt;
 
-  useEffect(() => {
-    if (renew === null) {
-      setRenew(true)
-      //if (isNaN(document.getElementById('selectOccurence').value) || document.getElementById('selectOccurence').value <= 0) {
-      /*if (document.getElementById('checkRenew')) {
-        document.getElementById('checkRenew').checked = true
-      }*/
-      //}
-    }
-    if (planType === null) {
-      setPlanType('')
-      //if (isNaN(document.getElementById('selectOccurence').value) || document.getElementById('selectOccurence').value <= 0) {
-      //document.getElementById('selectPlanType').selectedValue = ''
-      //}
-    }
-    if (duration === null) {
-      setDuration('86400')
-      //document.getElementById('selectDuration').selectedValue = 3
-    }
-  });
   const columns = [
     {
       key: 'id',
@@ -76,11 +58,15 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
 
   const mapPlans = (x) => {
     const temp = x.frequency < 3600 ? "minutes" : x.frequency <= 86400 ? "hours" : "days"
+    const list = tokens.filter(t => t.address == x.token.toString());
+    if (list.length === 0) return;
+    const t = list[0];
+    
     return {
       id: x.planId.toString(), 
       planType: x.planType === 0 ? 'Telegram Access' : x.planType === 1 ? 'Discord Access' : 'Web Content',
       planName: x.planName.toString(),
-      amount: x.amount.toString() + ' ' /*+ (await _getTokenData(plan.token)).symbol*/ + ' each ' + Moment.duration(x.frequency*1000).as(temp) + ' ' + temp, // x.tokenName.toString() 
+      amount: (x.amount.toString() / Math.pow(10, t.decimals)) + ' ' + t.symbol /*+ (await _getTokenData(plan.token)).symbol*/ + ((x.frequency > 0) ? ' each ' + Moment.duration(x.frequency*1000).as(temp) + ' ' + temp : ''), // x.tokenName.toString() 
       merchant: x.merchantName.toString(),
     }
   }
@@ -94,18 +80,19 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
     return selectedNetwork.tokens.map(e => <option value={e.name} key={e.name}>{e.name}</option>);
   }
   const getToken = (tmp) => {
-    const tokens = JSON.parse(process.env.REACT_APP_ALLOWED_TOKENS);
     if (!tmp) 
       return {name: "-", address: "0x0"}
     return selectedNetwork.tokens.filter(e => e.name == tmp)[0];
   }
   
   const submitHandle = (event) => {
+    if (!tokens) return;
+    const t = tokens.filter(t => t.address == getToken(token).address.toString())[0];
     event.preventDefault()
     createPlan({
       address: getToken(token).address, 
-      amount: parseInt(event.target.elements.inputAmount.value), 
-      frequency: parseInt(event.target.elements.inputFrequency.value) * parseInt(duration), 
+      amount: bn((parseFloat(event.target.elements.inputAmount.value) * Math.pow(10, t.decimals)).toString()).toString(), 
+      frequency: event.target.elements.inputFrequency.value =='' ? 0 : parseInt(event.target.elements.inputFrequency.value) * parseInt(duration), 
       planType: parseInt(planType),
       planTypeInfos: planType == '0' ? event.target.elements.inputTypeInfosTelegram.value : planType == '1' ? event.target.elements.inputTypeInfosDiscord.value : event.target.elements.inputTypeInfosUrl.value,
       //tokenName: getToken(token).name,
@@ -189,7 +176,7 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
               </CFormSelect>
             </CCol>
             <CCol md={2}>
-              <CFormInput type="number" name="inputAmount" label={"Amount " + getToken(token).name} required/>
+              <CFormInput type="decimal" name="inputAmount" label={"Amount " + getToken(token).name} required/>
             </CCol>
             <CCol md={1} hidden={!renew}>
               each
@@ -218,7 +205,7 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
             <CCol xs={12}>
               <CButton type="submit" onClick={(e) => {
                 document.getElementById('submit').click()
-              }} disabled={!isValidPlan || !isValidPlan.valid}>Create this plan now</CButton>
+              }} disabled={!isValidPlan || !isValidPlan.valid}>Create my plan</CButton>
               <p>(I will receive subscriptions on my wallet {selectedAddress})</p>
               <input type="submit" value="submit" id="submit" className="invisible" />
             </CCol>
@@ -230,7 +217,7 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
       <TransactionErrorMessage />
       <WaitingForTransactionMessage />
       <hr/>
-      {plans.length > 0 && (
+      {plans.length > 0 && tokens && tokens.length > 0 && (
         <>
         <label>You have <a href="/#/plan/list">{plans.length} plans.</a></label>
         <CTable columns={columns} items={plans.map(mapPlans)} />

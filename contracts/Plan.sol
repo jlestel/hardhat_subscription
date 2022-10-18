@@ -50,8 +50,8 @@ abstract contract PlanV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         string memory planName,
         string memory merchantName
     ) external {
-        require(token != address(0), "address cannot be null address");
-        require(amount > 0, "amount needs to be > 0");
+        require(token != address(0), "NE");
+        require(amount > 0, "NA");
         require(frequency > 0, "frequency needs to be > 0");
         plans[nextPlanId] = Plan(
             msg.sender,

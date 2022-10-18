@@ -4,6 +4,16 @@
 $enable-ltr: true;
 $enable-rtl: true;
 
+$gray-base: #3c4b64 !default;
+$gray-100:  #ebedef !default;
+$header-color:                  #FFF;
+$header-hover-color:             $gray-100 !default;
+$header-active-color:            $gray-100 !default;
+$header-bg:                      $gray-base !default;
+
+$primary: #0074d9;
+$danger: #ff4136;
+
 // Import CoreUI for React components library
 @import "@coreui/coreui/scss/coreui";
 

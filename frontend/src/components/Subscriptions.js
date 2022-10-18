@@ -17,6 +17,7 @@ export function Subscriptions(/*{ subscriptions, cancel, access }*/) {
 
   const subscriptions = useSelector((state) => state.subscriptions)
   const plans = useSelector((state) => state.allPlans)
+  const tokens = useSelector((state) => state.tokens)
 
   function handleCancel(event) {
     event.preventDefault()
@@ -35,8 +36,18 @@ export function Subscriptions(/*{ subscriptions, cancel, access }*/) {
 
   const columns = [
     {
-      key: 'id',
-      label: '#',
+      key: 'planName',
+      label: 'Plan',
+      _props: { scope: 'col' },
+    },
+    {
+      key: 'amount',
+      label: 'Amount',
+      _props: { scope: 'col' },
+    },
+    {
+      key: 'planType',
+      label: 'Content',
       _props: { scope: 'col' },
     },
     {
@@ -49,34 +60,22 @@ export function Subscriptions(/*{ subscriptions, cancel, access }*/) {
       label: 'Next payment',
       _props: { scope: 'col' },
     },
-    {
-      key: 'planType',
-      label: 'Type',
-      _props: { scope: 'col' },
-    },
-    {
-      key: 'planName',
-      label: 'Name',
-      _props: { scope: 'col' },
-    },
-    {
-      key: 'amount',
-      label: 'Amount',
-      _props: { scope: 'col' },
-    },
   ]
 
   const mapSubscriptions = (x) => {
     if (plans.length===0) return;
+    if (!tokens || tokens.length === 0) return;
     const plan = plans[x.planId];
     const temp = plan.frequency < 3600 ? "minutes" : plan.frequency <= 86400 ? "hours" : "days"
+    const t = tokens.filter(e => e.address === plan.token)[0];
+    
     return {
       id: x.subscriptionId.toString(), 
       startedAt: Moment(x.start * 1000).format('DD/MM/YYYY h:m'),
-      nextPayment: Moment(x.nextPayment * 1000).format('DD/MM/YYYY h:m'),
-      planType: plan.planType === 0 ? 'Telegram Access' : plan.planType === 1 ? 'Discord Access' : 'Web Content',
+      nextPayment: plan.frequency > 0 ? Moment(x.nextPayment * 1000).format('DD/MM/YYYY h:m') : '-',
+      planType: plan.planType === 0 ? 'Telegram Access' : plan.planType === 1 ? 'Discord Access' : 'Web',
       planName: plan.planName.toString(),
-      amount: plan.amount.toString() + ' ' + /*plan.tokenName.toString()*/ + ' each ' + Moment.duration(plan.frequency*1000).as(temp) + ' ' + temp,
+      amount: parseFloat(plan.amount / Math.pow(10, t.decimals)) + ' ' + t.symbol + ((plan.frequency>0)?' each ' + Moment.duration(plan.frequency*1000).as(temp) + ' ' + temp :''),
       merchant: plan.merchantName.toString(),
     }
   }

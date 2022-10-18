@@ -1,8 +1,14 @@
-NETWORK=goerli
+NETWORK=mumbai
+#NETWORK=goerli
 
 # make addr=123 faucet
 faucet: 
 	- npx hardhat --network ${NETWORK} faucet ${addr}
+
+run:
+	- npx hardhat run scripts/deploy.js --network localhost
+	- cd api && HARDHAT_NETWORK=localhost NETWORKS=5,1337 npm start
+	- cd frontend && BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' node node_modules/react-scripts/bin/react-scripts.js start
 
 #switchNetwork:
 #	- cd frontend && cp src/contracts/${NETWORK}/* src/contracts/

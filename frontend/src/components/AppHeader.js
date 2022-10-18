@@ -21,8 +21,10 @@ const AppHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
   const subscriptions = useSelector((state) => state.subscriptions)
+  const plans = useSelector((state) => state.plans)
 
   return (
+    <>
     <CHeader position="sticky" className="mb-4">
       <CContainer fluid>
         <CHeaderToggler
@@ -41,6 +43,9 @@ const AppHeader = () => {
             </CNavLink>
           </CNavItem>
           <CNavItem>
+            <CNavLink href="/#/plan/list">My Plans ({plans.length})</CNavLink>
+          </CNavItem>
+          <CNavItem>
             <CNavLink href="/#/subscription/list">My Subscriptions ({subscriptions.length})</CNavLink>
           </CNavItem>
         </CHeaderNav>
@@ -48,11 +53,12 @@ const AppHeader = () => {
           <AppHeaderDropdown />
         </CHeaderNav>
       </CContainer>
-      <CHeaderDivider />
-      <CContainer fluid>
-        <Breadcrumb  />
-      </CContainer>
     </CHeader>
+    <CContainer fluid>
+      <Breadcrumb  />
+    </CContainer>
+    <hr/>
+    </>
   )
 }
 

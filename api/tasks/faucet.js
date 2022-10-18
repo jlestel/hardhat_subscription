@@ -23,7 +23,7 @@ task("faucet", "Sends ETH and tokens to an address")
     const token = await ethers.getContractAt(contractName, contractAddress);
     const [sender] = await ethers.getSigners();
 
-    const tx = await token.transfer(receiver, 10000);
+    const tx = await token.transfer(receiver, BigNumber.from("1000000000000000000000"));
     await tx.wait();
 
     const tx2 = await sender.sendTransaction({

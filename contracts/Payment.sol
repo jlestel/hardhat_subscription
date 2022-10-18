@@ -1,14 +1,16 @@
 pragma solidity ^0.8.6;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+//import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+//import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-//import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
+
     struct Plan {
         address merchant;
         address token;
@@ -19,6 +21,8 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         string planTypeInfos;
         string planName;
         string merchantName;
+        uint paid;
+        uint released;
     }
     struct Subscription {
         uint subscriptionId;
@@ -27,6 +31,7 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         string subscriberInfos;
         uint start;
         uint nextPayment;
+        uint paid;
     }
 
     uint public nextPlanId;
@@ -34,7 +39,7 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     mapping(uint => Plan) public plans;
 
-    mapping(address => mapping(uint => Subscription)) public subscriptions;
+    //mapping(address => mapping(uint => Subscription)) public subscriptions;
     mapping(uint => Subscription) private _allSubscriptions;
 
     event SubscriptionCreated(
@@ -82,7 +87,6 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     ) external {
         require(token != address(0), "NE");
         require(amount > 0, "GT0");
-        require(frequency > 0, "GT0");
         plans[nextPlanId] = Plan(
             msg.sender,
             token,
@@ -92,7 +96,9 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             planType,
             planTypeInfos,
             planName,
-            merchantName
+            merchantName,
+            0,
+            0
         );
         nextPlanId++;
     }
@@ -103,7 +109,7 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         require(plan.merchant != address(0), "NE");
         require(token.allowance(msg.sender, address(this)) > plan.amount, "NA");
 
-        token.transferFrom(msg.sender, plan.merchant, plan.amount);
+        token.transferFrom(msg.sender, this.owner(), plan.amount);
 
         Subscription memory sub = Subscription(
             nextSubscriptionId,
@@ -111,16 +117,18 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             msg.sender,
             customData,
             block.timestamp,
-            block.timestamp + plan.frequency
+            block.timestamp + plan.frequency,
+            plan.amount
         );
-        subscriptions[msg.sender][nextSubscriptionId] = sub;
+        plan.paid += plan.amount;
+        //subscriptions[msg.sender][nextSubscriptionId] = sub;
         _allSubscriptions[nextSubscriptionId] = sub;
         emit SubscriptionCreated(msg.sender, plan, sub, block.timestamp);
         nextSubscriptionId++;
     }
 
     function cancel(uint subscriptionId) external {
-        Subscription storage subscription = subscriptions[msg.sender][
+        Subscription storage subscription = _allSubscriptions[
             subscriptionId
         ];
         require(subscription.subscriber != address(0), "NE");
@@ -130,7 +138,7 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
                 length += 1;
             }
         }
-        delete subscriptions[msg.sender][subscriptionId];
+        //delete subscriptions[msg.sender][subscriptionId];
         delete _allSubscriptions[subscriptionId];
     }
 
@@ -141,10 +149,35 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         Plan storage plan = plans[subscription.planId];
         IERC20(plan.token).transferFrom(
             subscription.subscriber,
-            plan.merchant,
+            this.owner(),
             plan.amount
         );
         subscription.nextPayment = subscription.nextPayment + plan.frequency;
+        subscription.paid += plan.amount;
+        plan.paid += plan.amount; 
+    }
+
+    function withdrawal(address tokenAddress) external {
+        IERC20 token = IERC20(tokenAddress);
+        require(msg.sender != address(0), "NE");
+        require(token.allowance(this.owner(), address(this)) > 0, "NA");
+        uint withdraw = 0;
+        // Get already released amount
+        for (uint256 index = 0; index <= nextPlanId; index++) {
+            if (
+                plans[index].merchant == msg.sender && 
+                plans[index].token == tokenAddress &&
+                plans[index].paid > plans[index].released
+                ) {
+                Plan storage plan = plans[index];
+                withdraw += (plan.paid - plan.released);
+                plan.released = plan.paid;
+            }
+        }
+        console.log('release %s', withdraw);
+        if (withdraw > 0) {
+            token.transferFrom(this.owner(), msg.sender, withdraw * 98 / 100);
+        }
     }
 
     function getPlans(bool onlyMine) public view returns (Plan[] memory) {
@@ -213,9 +246,9 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     function isPayable(uint planId) public view returns (bool success) {
         require(plans[planId].merchant != address(0), "NE");
         return
-            IERC20(plans[planId].token).allowance(msg.sender, address(this)) >
+            IERC20(plans[planId].token).allowance(msg.sender, address(this)) >=
             plans[planId].amount &&
-            IERC20(plans[planId].token).balanceOf(msg.sender) >
+            IERC20(plans[planId].token).balanceOf(msg.sender) >=
             plans[planId].amount;
     }
 
@@ -241,6 +274,7 @@ contract PaymentV0 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
             plans[_allSubscriptions[subscriptionId].planId].amount;
     }
 
+    // TODO: remove
     function balance(uint subscriptionId) public view returns (uint success) {
         require(
             _allSubscriptions[subscriptionId].subscriber != address(0),

@@ -12,53 +12,50 @@ describe("Payment", function() {
   let payment, token;
   let merchant, sub;
 
-  it('use last contract upgrade', async () => {
-    const Box = await hre.ethers.getContractFactory("PaymentV1");
-      const BoxV2 = await hre.ethers.getContractFactory("PaymentV2");
-  
-      const instance = await hre.upgrades.deployProxy(Box, [], {
-        initializer: "init",
-      });
-      payment = await hre.upgrades.upgradeProxy(instance.address, BoxV2);
-  
-      const Token = await hre.ethers.getContractFactory("Token");
-      token = await Token.deploy(); 
-      token.attach(payment.address)
-      await token.deployed();
-  });
-  
-
   beforeEach(async () => {
-    //
+    const Box = await hre.ethers.getContractFactory("PaymentV1");
+    const BoxV2 = await hre.ethers.getContractFactory("PaymentV2");
+
+    const instance = await hre.upgrades.deployProxy(Box, [], {
+      initializer: "init",
+      kind: "uups"
+    });
+    payment = await hre.upgrades.upgradeProxy(instance.address, BoxV2);
+
+    const Token = await hre.ethers.getContractFactory("Token");
+    token = await Token.deploy(); 
+    token.attach(payment.address)
+    await token.deployed();
+
+    [merchant, sub, sub2] = await hre.ethers.getSigners();
+    await token.transfer(sub.address, 1000);
+    await token.connect(sub).approve(payment.address, 100*10, {from: sub.address});
+    await token.transfer(sub2.address, 1000);
+    await token.connect(sub2).approve(payment.address, 100*10, {from: sub2.address});
   });
 
   it('init money in mock token', async () => {
-    [merchant, sub] = await hre.ethers.getSigners();
-    await token.transfer(sub.address, 1200)
-    await token.connect(sub).approve(payment.address, 100*12, {from: sub.address});
+    await hre.run('compile');
+    //
   });
   it('money should be in mock token', async () => {
-    await hre.run('compile');
-
     const [owner] = await hre.ethers.getSigners();
-    const ownerBalance = await token.balanceOf(owner.address);
-    //console.log(owner, ownerBalance)
-    expect(await token.totalSupply()).to.equal('1000000000000000000000000');
+    const ownerBalance = await token.balanceOf(owner.address); 
+    expect((await token.totalSupply()).toString()).to.equal('1000000000000000000000000');
 
   });
 
   it('should create a plan', async () => {
-    
     //console.log("payment deployed to:", payment.address);
 
-    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
+    await payment.connect(sub).createPlan(token.address, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: sub.address});
     const plan1 = await payment.plans(0);
 //    console.log(plan1)
     expect(plan1.token).to.equal(token.address);
     expect(plan1.amount.toString()).to.equal('100');
     expect(plan1.frequency.toString()).to.equal('30');
 
-    await payment.createPlan(token.address, 200, 60, 2, 'https://www.google.fr', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
+    await payment.connect(sub).createPlan(token.address, 200, 60, 2, 'https://www.google.fr', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: sub.address});
     const plan2 = await payment.plans(1);
     expect(plan2.token).to.equal(token.address);
     expect(plan2.amount.toString()).to.equal('200'); 
@@ -67,18 +64,15 @@ describe("Payment", function() {
 
   it('should NOT create a plan', async () => {
     await expect(
-      payment.createPlan(constants.ZERO_ADDRESS, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address})
-    ).to.be.revertedWith('address cannot be null address');
+      payment.connect(sub).createPlan(constants.ZERO_ADDRESS, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: sub.address})
+    ).to.be.revertedWith('NE');
     await expect(
-      payment.createPlan(token.address, 0, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address})
-    ).to.be.revertedWith('amount needs to be > 0');
-    await expect(
-      payment.createPlan(token.address, 100, 0, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address})
-    ).to.be.revertedWith('frequency needs to be > 0');
+      payment.connect(sub).createPlan(token.address, 0, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: sub.address})
+    ).to.be.revertedWith('GT0');
   });
 
   it('should create a subscription', async () => {
-    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
+    await payment.connect(sub).createPlan(token.address, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: sub.address});
     //await network.provider.send("evm_mine");
     [deployer, sub] = await ethers.getSigners();
     await network.provider.send("evm_mine");
@@ -91,13 +85,14 @@ describe("Payment", function() {
     let block = await tx.wait();
     await network.provider.send("evm_mine");
     
-    const subscription = await payment.subscriptions(sub.address, block.events[2].args.subscription.subscriptionId.toString());
-    //await network.provider.send("evm_mine");
-    block = await hre.ethers.provider.getBlock("latest")
-    const testTime = block.timestamp - 1
-    //await network.provider.send("evm_mine");
-    expect(subscription.subscriber).to.equal(sub.address);
-    expect(subscription.start.toString()).to.equal(testTime.toString());
+    //const subscriptions = await payment.getSubscriptions(true);
+    ////const subscription = subscriptions.filter(e => e.subscriptionId.toString() == block.events[2].args.subscription.subscriptionId.toString())[0]; 
+    ////await network.provider.send("evm_mine");
+    //block = await hre.ethers.provider.getBlock("latest")
+    //const testTime = block.timestamp - 1
+    ////await network.provider.send("evm_mine");
+    //expect(subscription.subscriber).to.equal(sub.address);
+    //expect(subscription.start.toString()).to.equal(testTime.toString());
     //console.log((subscription.nextPayment/10).toFixed(0).toString())
     //expect((subscription.nextPayment/10).toFixed(0).toString()).to.equal(((testTime/ 10).toFixed(0)- + 86400 * 30).toString());
   });
@@ -105,40 +100,50 @@ describe("Payment", function() {
   it('should NOT create a subscription', async () => {
     await expect(
       payment.connect(sub).subscribe(1000, {from: sub.address})
-    ).to.be.revertedWith('this plan does not exist');
+    ).to.be.revertedWith('NE');
   });
 
   it('should subscribe and pay', async () => {
     let balanceMerchant, balancesub;
-    await payment.createPlan(token.address, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: merchant.address});
+    await payment.connect(sub).createPlan(token.address, 100, 30, 0, '1664553005', 'VIP Telegram - Abonnement 1 mois', 'Marchant de rêve', {from: sub.address});
 
-    const tx = await payment.connect(sub).subscribe(0, {from: sub.address});
+    const tx = await payment.connect(sub2).subscribe(0, {from: sub2.address});
     const block = await tx.wait();
-    balanceMerchant = await token.balanceOf(merchant.address); 
-    balancesub = await token.balanceOf(sub.address); 
-    expect(balanceMerchant.toString()).to.equal('999999999999999999999000');
-    expect(balancesub.toString()).to.equal('1000');
+    balanceMerchant = await token.balanceOf(sub.address); 
+    balancesub = await token.balanceOf(sub2.address); 
+    expect(balanceMerchant.toString()).to.equal('1000');
+    expect(balancesub.toString()).to.equal('900');
+    
+    let tc = await token.connect(merchant).approve(payment.address, 10000000);
+    await tc.wait();
+    tc = await token.balanceOf(sub.address);
+    console.log('balance',tc.toString());
+    //await tc.wait();
+    tc = await payment.connect(sub).withdrawal(token.address);
+    await tc.wait();
+    tc = await token.balanceOf(sub.address);
+    console.log('balance',tc.toString());
 
     /*expect(
       payment.connect(sub).pay(0)
     ).to.be.revertedWith('not due yet');*/
       
-    const ts = await increase(31 * 1000);
+    /*const ts = await increase(31 * 1000);
     console.log(ts);
     
-    await payment.connect(sub).pay(block.events[2].args.subscription.subscriptionId.toString());
-    balanceMerchant = await token.balanceOf(merchant.address); 
-    balancesub = await token.balanceOf(sub.address); 
-    expect(balanceMerchant.toString()).to.equal('999999999999999999999100');
-    expect(balancesub.toString()).to.equal('900');
+    await payment.connect(sub2).pay(block.events[2].args.subscription.subscriptionId.toString());
+    balanceMerchant = await token.balanceOf(sub.address); 
+    balancesub = await token.balanceOf(sub2.address); 
+    expect(balanceMerchant.toString()).to.equal('1100');
+    expect(balancesub.toString()).to.equal('1000');
 
     await increase(31 * 1000);
 
-    await payment.connect(sub).pay(block.events[2].args.subscription.subscriptionId.toString());
-    balanceMerchant = await token.balanceOf(merchant.address); 
-    balancesub = await token.balanceOf(sub.address); 
-    expect(balanceMerchant.toString()).to.equal('999999999999999999999200');
-    expect(balancesub.toString()).to.equal('800');
+    await payment.connect(sub2).pay(block.events[2].args.subscription.subscriptionId.toString());
+    balanceMerchant = await token.balanceOf(sub.address); 
+    balancesub = await token.balanceOf(sub2.address); 
+    expect(balanceMerchant.toString()).to.equal('1100');
+    expect(balancesub.toString()).to.equal('900');*/
   });
 
   
@@ -150,7 +155,7 @@ describe("Payment", function() {
     //await increase(10 * 1000);
     await expect(
       payment.connect(sub).pay(block.events[2].args.subscription.subscriptionId.toString())
-    ).to.be.revertedWith('not due yet');
+    ).to.be.revertedWith('NOT_DUE');
   });
 
   it('should cancel subscription', async () => {
@@ -163,13 +168,13 @@ describe("Payment", function() {
     expect(subscription2.length).to.equal(subscription1.length-1);
     await expect(
       payment.connect(sub).cancel(block.events[2].args.subscription.subscriptionId.toString(), {from: sub.address})
-    ).to.be.revertedWith('this subscription does not exist and cannot be cancelled');
+    ).to.be.revertedWith('NE');
   });
 
   it('should NOT cancel subscription', async () => {
     await expect(
       payment.connect(sub).cancel(1000, {from: sub.address})
-    ).to.be.revertedWith('this subscription does not exist and cannot be cancelled');
+    ).to.be.revertedWith('NE');
 
   });
 });

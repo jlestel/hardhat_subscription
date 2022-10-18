@@ -5,15 +5,16 @@ const initialState = {
 
   // The info of the token (i.e. It's Name and symbol)
   tokenData: '',
-  tokens: undefined,
+  tokens: [],
+  withdrawal: [],
   // The user's address and balance
   selectedAddress: '',
   selectedNetwork: undefined,
   isValidPlan: undefined,
-  balance: 0,
   plans: [],
   allPlans: [],
   subscriptions: [],
+  allSubscriptions: [],
   responseToSubscribe: undefined,
   tgUser: undefined,
   isPayable: false,

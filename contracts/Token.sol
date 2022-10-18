@@ -7,7 +7,7 @@ uint256 constant initialSupply = 1000000 * (10**18);
 
 contract Token is ERC20 {
   
-  constructor() ERC20('Token Payperbloc', 'PPB') {
+  constructor() ERC20('Payperblock USD Token', 'USDT') {
     _mint(msg.sender, initialSupply);
   }
 }

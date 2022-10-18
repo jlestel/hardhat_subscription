@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import {
     CAlert,
@@ -7,23 +7,28 @@ import {
   } from '@coreui/react'
 
 export function SubscriptionResult({}) {
+  const dispatch = useDispatch();
     const responseToSubscribe = useSelector((state) => state.responseToSubscribe)
-    
+
+    const handleClose = () => {
+      dispatch({ type: 'set', responseToSubscribe: null });
+    }
+
     return (
         <>
         {responseToSubscribe && responseToSubscribe.error && (
-          <CAlert color="danger" dismissible>
+          <CAlert color="danger" dismissible onClose={handleClose}>
             <CAlertHeading tag="h4">{responseToSubscribe.error}</CAlertHeading>
           </CAlert>
         )}
         {responseToSubscribe && !responseToSubscribe.error && responseToSubscribe.type.toString() !== '' && (
-        <CAlert color="success" dismissible>
+        <CAlert color="success" dismissible onClose={handleClose}>
         <CAlertHeading tag="h4">
         {responseToSubscribe && !responseToSubscribe.error && responseToSubscribe.type.toString() === '0' && (
             <>Your link to join Telegram channel : <a href={responseToSubscribe.link} target="_blank" rel="noopener noreferrer">{responseToSubscribe.link}</a></>
           )}
           {responseToSubscribe && !responseToSubscribe.error && responseToSubscribe.type.toString() === '1' && (
-            <>Your link to access Web content : <a href={responseToSubscribe.link} target="_blank" rel="noopener noreferrer">{responseToSubscribe.link}</a></>
+            <>Your link to access Discord content : <a href={responseToSubscribe.link} target="_blank" rel="noopener noreferrer">{responseToSubscribe.link}</a></>
           )}
           {(responseToSubscribe && !responseToSubscribe.error && (responseToSubscribe.type.toString() === '3' || responseToSubscribe.type.toString() === '2'))&& (
             <>Your link to access Web content : <a href={responseToSubscribe.link + "/playerppb/"} target="_blank" rel="noopener noreferrer">{responseToSubscribe.link}</a></>

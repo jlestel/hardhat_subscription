@@ -126,9 +126,11 @@ class MyStaticSiteStack extends cdk.Stack {
       handler: 'lambda.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, './../../api')),
       environment: {
-        "HARDHAT_NETWORK": "goerli",
+        "HARDHAT_NETWORK": "mumbai",
+        "ALCHEMY_APP_API_KEY_GOERLI": "s_7N0dmQWg2x-ZZ3zZsQEzC0aM5F01mI",
+        "ALCHEMY_APP_API_KEY_MUMBAI": "O5QqGlDXFYuko1squ-_1tsuxINrqtUa9",
         "PLAYER_API": "https://apipayperblock.citio.digital",
-        "NETWORKS"  : "5",
+        "NETWORKS"  : "80001,1337",
       },
       retryAttempts: 0,
       logRetention: 1,
@@ -182,7 +184,7 @@ class MyStaticSiteStack extends cdk.Stack {
         subnetType: cdk.aws_ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
       environment: {
-        "HARDHAT_NETWORK": "goerli",
+        "HARDHAT_NETWORK": "mumbai",
       },
       memorySize: 1024,
       timeout: cdk.Duration.seconds(30),

@@ -54,22 +54,7 @@ const _nav = [
       text: 'NEW',
     },*/
   },
-  {
-    component: CNavTitle,
-    name: 'My subscriptions',
-  },
-  {
-    component: CNavItem,
-    name: 'New subscription',
-    to: '/subscription/create',
-    icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'All subscriptions',
-    to: '/subscription/list',
-    icon: <CIcon icon={cilListNumbered} customClassName="nav-icon" />,
-  },/*
+  /*
   {
     component: CNavItem,
     name: 'List',
@@ -94,6 +79,22 @@ const _nav = [
     component: CNavItem,
     name: 'My Plans',
     to: '/plan/list',
+    icon: <CIcon icon={cilListNumbered} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'My subscriptions',
+  },
+  {
+    component: CNavItem,
+    name: 'New subscription',
+    to: '/subscription/create',
+    icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'All subscriptions',
+    to: '/subscription/list',
     icon: <CIcon icon={cilListNumbered} customClassName="nav-icon" />,
   },
    /*badge: {
