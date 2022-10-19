@@ -33,7 +33,7 @@ export function Withdraw(/*{ subscriptions, cancel, access }*/) {
         <>
         <h4>{withdrawal.filter(e => e.paid > 0).length} withdrawal(s) available</h4>
         {withdrawal.filter(e => e.paid > 0).map(e => 
-           <p key={e.symbol}>{e.paid - e.released} {e.symbol} to withdraw: <CButton disabled={e.released==e.paid} key={e.address} onClick={handleWithdrawal} value={e.address}>Withdrawn {e.paid-e.released} {e.name} now</CButton></p>
+           <p key={e.symbol}>{e.paid - e.released} {e.symbol} to withdraw: <CButton disabled={e.released==e.paid} key={e.address} onClick={handleWithdrawal} value={e.address}>Withdraw {e.paid-e.released} {e.name} now</CButton></p>
         )}
         <TransactionErrorMessage />
         <WaitingForTransactionMessage />

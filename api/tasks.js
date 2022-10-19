@@ -44,8 +44,10 @@ exports.rebill = async(event, context) => {
             const plan = plans.filter(e => e.planId.toString() == sub[i].planId.toString())[0];
             if (plan.planType.toString() != '3') { // no need to renew by duration plan
               console.log("Renew ...",i, sub[i].subscriber, "on plan ", sub[i].planId.toString(), parseInt(sub[i].nextPayment), parseInt(date.getTime()/1000));
-              const tx = await payment.pay(sub[i].subscriptionId.toString(), { /*from: sub[i].subscriber, */gasLimit: 150000});
-              const receipt = await tx.wait();
+              payment.pay(sub[i].subscriptionId.toString(), { /*from: sub[i].subscriber, */gasLimit: 150000});
+              // TODO: need to control it ?
+              //const tx = await payment.pay(sub[i].subscriptionId.toString(), { /*from: sub[i].subscriber, */gasLimit: 150000});
+              //const receipt = await tx.wait();
               console.log("Renewed !",i, sub[i].subscriber, "on plan ", sub[i].planId.toString(), parseInt(sub[i].nextPayment), parseInt(date.getTime()/1000));
             } else {
               console.log('Duration subscription: no need to pay now...', i, sub[i].planId.toString(), time - parseInt(sub[i].nextPayment.toString()));

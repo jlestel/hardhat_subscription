@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="PayPerBlock">
+    <title>PayPerBlock Integration</title>
+    <script src="https://cdn.jsdelivr.net/npm/@alch/alchemy-web3@latest/dist/alchemyWeb3.min.js"></script>
+    <script src="payperblock.js"></script>
+  </head>
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    
+    <h2>Add Payperblock in One Minute with Javascript</h2>
+    <p>This page demonstrates using Payperblock JS library with no build tooling.</p>
+
+    <!-- We will put our React component inside this div. -->
+    <script>
+    payperblock = new Payperblock("api_public");
+
+    var subscriptionData = {
+      subscriptionPlan: "0",
+      network: "mumbai"
+    };
+
+    const clickBtn = () => {
+      console.log("clic");
+      //payperblock.getMetaMaskBalance();
+      payperblock.subscribe(subscriptionData)
+      .then((txHash) => {
+        console.log(txHash);
+        // do something after the subscription
+      });
+    };
+    </script>
+
+    <button onclick="clickBtn()">Subscribe to my plan</button>
+  </body>
+</html>

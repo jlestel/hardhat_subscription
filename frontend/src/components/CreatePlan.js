@@ -153,7 +153,7 @@ export function CreatePlan(/*{ subscriptions, cancel, access }*/) {
                 {isValidPlan.telegramChannel && (<>Well done! Bot can manage invite and users of your <b>{isValidPlan.telegramChannel}</b> Telegram Channel.</>)}
                 {isValidPlan.url && (<>Well done! {isValidPlan.url} is alive.</>)}
                 <br/>
-                Complete form below to create a plan to monetize your content with Payperblock:
+                Complete form below to create a Payperblock Plan:
               </CAlert>
             )}
           </CCol>

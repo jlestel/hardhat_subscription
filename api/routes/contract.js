@@ -3,6 +3,26 @@ const router = express.Router();
 const hre = require("hardhat");
 const fs = require("fs");
 const { Alchemy, Network, TokenBalanceType } = require("alchemy-sdk");
+const mapping = {
+  '5': {
+    alchemy: Network.ETH_GOERLI,
+    contract: "goerli",
+    name: "Goerli Testnet",
+    apiKey: process.env.ALCHEMY_APP_API_KEY_GOERLI,
+  },
+  '1337': {
+    alchemy: null,
+    contract: "localhost",
+    name: "HardHat Local",
+    apiKey: process.env.ALCHEMY_APP_API_KEY_GOERLI,
+  },
+  '80001': {
+    alchemy: Network.MATIC_MUMBAI,
+    contract: "mumbai",
+    name: "Mumbai Testnet",
+    apiKey: process.env.ALCHEMY_APP_API_KEY_MUMBAI,
+  },
+};
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
@@ -10,31 +30,49 @@ router.get('/', async function(req, res, next) {
   res.end();
 });
 
+router.get('/getContracts', async function(req, res, next) { 
+  const r = mapping;
+  r['5'].smartContractAddress = await getContract("PaymentV1", mapping['5'].contract);
+  r['5'].abi = await getContract("PaymentV1", mapping['5'].contract, true);
+  r['1337'].smartContractAddress = await getContract("PaymentV1", mapping['1337'].contract);
+  r['1337'].abi = await getContract("PaymentV1", mapping['1337'].contract, true);
+  r['80001'].smartContractAddress = await getContract("PaymentV1", mapping['80001'].contract);
+  r['80001'].abi = await getContract("PaymentV1", mapping['80001'].contract, true);
+  res.json(r);
+  res.end();
+});
+router.get('/plan/:id', async function(req, res, next) {
+  const network = '80001';
+  const contract = await getContract("PaymentV1", mapping[network].contract)
+  const payment = await hre.ethers.getContractAt("PaymentV1", contract);
+  const plans = await payment.getPlans(false);
+  const plan = plans.filter(e => e.planId.toString() == req.params.id)[0];
+
+  const alchemy = new Alchemy({
+    apiKey: mapping[network].apiKey,
+    network: mapping[network].alchemy,
+  });
+  
+  const metadata = await alchemy.core.getTokenMetadata(plan.token.toString());
+  res.json({
+    network: mapping[network].contract,
+    id: plan.planId.toString(),
+    wallet: plan.merchant,
+    interval: plan.frequency.toString(),
+    amount: plan.amount.toString() / Math.pow(10, metadata.decimals),
+    currencyCode: metadata.symbol,
+    currencyAddress: plan.token.toString(),
+    currencyAbi: await getContract(metadata.symbol, "sample"),
+    fee: 2,
+    priceLimitPercentage: 20,
+  });
+  res.end();
+});
+
 router.post('/getContracts', async function(req, res, next) { 
   const arr = process.env.NETWORKS.split(',');
   //const finalRes = {};
-
-  const mapping = {
-    '5': {
-      alchemy: Network.ETH_GOERLI,
-      contract: "goerli",
-      name: "Goerli Testnet",
-      apiKey: process.env.ALCHEMY_APP_API_KEY_GOERLI,
-    },
-    '1337': {
-      alchemy: null,
-      contract: "localhost",
-      name: "HardHat Local",
-      apiKey: process.env.ALCHEMY_APP_API_KEY_GOERLI,
-    },
-    '80001': {
-      alchemy: Network.MATIC_MUMBAI,
-      contract: "mumbai",
-      name: "Mumbai Testnet",
-      apiKey: process.env.ALCHEMY_APP_API_KEY_MUMBAI,
-    },
-  };
-
+  
   let tokens = [];
   if (mapping[req.body.network].alchemy) {
     const alchemy = new Alchemy({

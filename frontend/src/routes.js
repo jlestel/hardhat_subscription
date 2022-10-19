@@ -2,6 +2,8 @@ import React from 'react'
 
 const Usage = React.lazy(() => import('./components/Usage'))
 const UseCases = React.lazy(() => import('./components/UseCases'))
+const Api = React.lazy(() => import('./components/Api'))
+const Pricing = React.lazy(() => import('./components/Pricing'))
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/manage/Subscriptions'))
 //const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -57,15 +59,17 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 const routes = [
-  { path: '/', exact: true, name: 'How to monetize content?', element: Usage },
-  { path: '/usecases', exact: true, name: 'Use cases', element: UseCases },
+  { path: '/', exact: true, name: 'Accept crypto payments in any business in minutes', element: Usage },
+  { path: '/usecases', exact: true, name: 'Some use-cases to show you all we can do now', element: UseCases },
+  { path: '/api', exact: true, name: 'Start now your Web3 Integration !', element: Api },
+  { path: '/pricing', exact: true, name: 'Low fees for a great innovation', element: Pricing },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   //{ path: '/subscriptions2', name: 'All my subscriptions', element: Colors },
   { path: '/subscription/create', name: 'Subscribe to a plan', element: MySubscribe },
   { path: '/subscription/list', name: 'All my subscriptions', element: MySubscriptions },
-  { path: '/plan/list', name: 'All my plans', element: MyPlans },
-  { path: '/plan/create', name: 'Create a plan', element: MyPlan },
+  { path: '/plan/list', name: 'All my plans and withdrawals', element: MyPlans },
+  { path: '/plan/create', name: 'Create your Web3 subscription... and share it!', element: MyPlan },
   { path: '/base', name: 'Base', element: Cards, exact: true },
   { path: '/base/accordion', name: 'Accordion', element: Accordion },
   { path: '/base/breadcrumbs', name: 'Breadcrumbs', element: Breadcrumbs },

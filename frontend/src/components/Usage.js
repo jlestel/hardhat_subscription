@@ -20,10 +20,13 @@ import {
   CAccordionBody,
   CNavTitle,
 } from '@coreui/react'
+
 //import { useStore } from 'react-redux'
 
 import { NetworkErrorMessage } from "./NetworkErrorMessage";
 import { connectWallet } from "./Dapp";
+import { Api } from "./Api";
+import Pricing from "./Pricing";
 
 export function Usage({ }) {
   const selectedAddress = useSelector((state) => state.selectedAddress);
@@ -33,20 +36,21 @@ export function Usage({ }) {
       <h2>The most effective way to accept crypto payments in minutes</h2>
       
       <h4>and get paid in one-time, by subscription or by the duration.</h4>
-        <CCallout color="success">
-        Available soon on Ethereum, Polygon, Avalanche, BNB and Fantom blockchain. To try it now, just connect and switch to Goerli Testnet.
+        <CCallout color="success" className="text-center">
+        We offer this <b>App and a suite of APIs, tooling and Smart Contracts</b> that enables a superior product experience to offer <b>crypto payment in any business</b>
         </CCallout>
-        <p>We offer a <b>suite of APIs, tooling and smart contracts</b> that enables a superior product experience to offer <b>crypto payment in any business</b>.</p>
-        <p>
-        If you’re a <b>Web3 company or you serve Web3 companies</b>, DAOs, or communities, then <b>you need automation</b>.<br/>
-        If you’re a <b>Web2 company or a content creator</b> then <b>you could be paid by tokens</b>, and add Web3 experience to your business.</p>
+        <ul>
+          <li>If you’re an <b>offline company or individual</b>, you can easily create crypto subscriptions or payments for any <a href="/#/usecases">use-cases outlined below</a></li>
+          <li>If you’re a <b>Web company or a content creator</b> then <b>you can add Web3 experience to your business in minutes</b>, and get paid by tokens / stable coins</li>
+          <li>If you’re a <b>Web3 company or you serve Web3 companies</b>, DAOs, or <b>Private Telegram / Discord Communities</b>, then <b>you need automation</b></li>
+        </ul>
       <CRow>
         <CCol sm={4}>
           <CCard className="text-center">
             <CCardBody>
               <CCardTitle>1 - Recurring payment</CCardTitle>
               <CCardText>
-                Accept cryptocurrency for your <b>subscription business</b> without your end-customers having to initiate every payment.
+                Accept crypto for your <b>subscription business</b> without your end-customers having to initiate every payment.
               </CCardText>
               <CButton href="/#/plan/create" disabled={!selectedAddress}>Create a plan</CButton>
             </CCardBody>
@@ -55,9 +59,9 @@ export function Usage({ }) {
         <CCol sm={4}>
           <CCard className="text-center">
             <CCardBody>
-              <CCardTitle>2 - One-time payment</CCardTitle>
+              <CCardTitle>2 - Payment by duration</CCardTitle>
               <CCardText>
-                Accept a <b>one-time crypto payment</b> to give access to your content. Access is lifetime while not cancelled by customer.
+                End-customer <b>is charged based on the time spent viewing your content.</b> <a href="https://2105120523263239.player.citio.digital/playerppb" target="_blank" rel="noreferrer">Run a by duration live example now !</a>
               </CCardText>
               <CButton href="/#/plan/create" disabled={!selectedAddress}>Create a plan</CButton>
             </CCardBody>
@@ -66,9 +70,9 @@ export function Usage({ }) {
         <CCol sm={4}>
           <CCard className="text-center">
             <CCardBody>
-              <CCardTitle>3 - Payment by duration</CCardTitle>
+              <CCardTitle>3 - One-time payment</CCardTitle>
               <CCardText>
-                It&apos;s like a subscription payment but the end-customer <b>is charged based on the time spent viewing your content.</b>
+                Accept a <b>one-time crypto payment</b> to give access to your content or anything else. Access is lifetime while not cancelled by customer.
               </CCardText>
               <CButton href="/#/plan/create" disabled={!selectedAddress}>Create a plan</CButton>
             </CCardBody>
@@ -85,7 +89,7 @@ export function Usage({ }) {
       </p>
       </CCallout>
       
-      <h2>Want to monetize your content for cryptocurrencies?</h2>
+      <h2>Want to monetize your content or anything for crypto?</h2>
       <h4>Everything is automated WITHOUT CODE for your Web, Telegram and Discord content:</h4>
       <CAccordion flush>
         <CAccordionItem itemKey={1}>
@@ -153,6 +157,10 @@ export function Usage({ }) {
           </CCard>
         </CCol>
       </CRow>
+      <br/>
+      <Api />
+      <br/>
+      <Pricing />
     </div>
   );
 }

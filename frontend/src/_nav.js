@@ -36,17 +36,7 @@ const _nav = [
   },   
   {
     component: CNavItem,
-    name: 'Sample use-cases',
-    to: '/usecases',
-    icon: <CIcon icon={cilBank} customClassName="nav-icon" />,
-    /*badge: {
-      color: 'info',
-      text: 'NEW',
-    },*/
-  },   
-  {
-    component: CNavItem,
-    name: 'Dashboard',
+    name: 'Account',
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
     /*badge: {
@@ -97,6 +87,40 @@ const _nav = [
     to: '/subscription/list',
     icon: <CIcon icon={cilListNumbered} customClassName="nav-icon" />,
   },
+  {
+    component: CNavTitle,
+    name: 'Resources',
+  },
+  {
+    component: CNavItem,
+    name: 'Pricing',
+    to: '/pricing',
+    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+    /*badge: {
+      color: 'info',
+      text: 'NEW',
+    },*/
+  },   
+  {
+    component: CNavItem,
+    name: 'API',
+    to: '/api',
+    icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
+    /*badge: {
+      color: 'info',
+      text: 'NEW',
+    },*/
+  },   
+  {
+    component: CNavItem,
+    name: 'Sample use-cases',
+    to: '/usecases',
+    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+    /*badge: {
+      color: 'info',
+      text: 'NEW',
+    },*/
+  },   
    /*badge: {
           color: 'info',
           text: 'NEW',

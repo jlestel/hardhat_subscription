@@ -1,14 +1,9 @@
 import React from "react";
 import Moment from 'moment';
-import { useState, useEffect } from "react";
 import { useSelector } from 'react-redux'
 
-import { release } from "./Dapp";
-
 import {
-  CFormSelect,
   CTable,
-  CButton,
 } from '@coreui/react'
 import { Withdraw } from "./Withdraw";
  
@@ -56,7 +51,7 @@ export function Plans(/*{ subscriptions, cancel, access }*/) {
     },
     {
       key: 'subscriptionsReleased',
-      label: 'Withdrawn',
+      label: '',
       _props: { scope: 'col' },
     },
   ]
@@ -75,40 +70,14 @@ export function Plans(/*{ subscriptions, cancel, access }*/) {
       merchant: x.merchantName.toString(),
       subscriptions: subs.length > 0 ? subs.length : '0',
       //subscriptionsPaid: subs.length > 0 ? subs.map(e => e.paid).reduce((a,b) => (a / Math.pow(10, t.decimals)) + (b / Math.pow(10, t.decimals)), 0) : 0,
-      subscriptionsPaid: x.paid.toString() != '0' ? x.paid.toString() / Math.pow(10, t.decimals) : '0',
-      subscriptionsReleased: x.released.toString()!= '0' ? x.released.toString() / Math.pow(10, t.decimals) : '0',
-    }
-  }
-  const columnsEmbeed = [
-    {
-      key: 'planName',
-      label: 'Name',
-      _props: { scope: 'col' },
-    },
-    {
-      key: 'header',
-      label: 'Name',
-      _props: { scope: 'col' },
-    },
-    {
-      key: 'embeed',
-      label: 'Copy in Body',
-      _props: { scope: 'col' },
-    },
-  ]
-  const mapEmbeed = (x) => {
-    const temp = x.frequency < 3600 ? "minutes" : x.frequency <= 86400 ? "hours" : "days"
-    return {
-      planName: x.planName.toString(),
-      header: '<script defer="defer" src="https://payperblock.citio.digital/static/js/main.14a1360c.js"></script><link href="https://payperblock.citio.digital/static/css/main.606b1f02.css" rel="stylesheet">',
-      embeed: '<div id="payperblock" data-plan-id="' + x.planId.toString() + '"></div>',
+      subscriptionsPaid: x.paid && x.paid.toString() != '0' ? x.paid.toString() / Math.pow(10, t.decimals) : '0',
+      subscriptionsReleased: x.released && x.released.toString()!= '0' ? x.released.toString() / Math.pow(10, t.decimals) : '0',
     }
   }
   
   return (
     <div>
       <h4>My Plans</h4>
-      <Withdraw />
         {plans.length == 0 && (
           <>
           <label>No plans.</label>
@@ -119,13 +88,10 @@ export function Plans(/*{ subscriptions, cancel, access }*/) {
           <>
           <label>You have {plans.length} plans:</label>
           <CTable columns={columns} items={plans.map(mapPlans)} />
-          <hr/>
-          <h4>How to embeed a button plan into my Website?</h4>
-          <p>Copy / paste the following code into the head/body of your Website: </p>
-          <CTable columns={columnsEmbeed} items={plans.map(mapEmbeed)} />
           </>
 
         )}
+      <Withdraw />
     </div>
   );
 }

@@ -70,7 +70,7 @@
         "args": ["start"],
         "cwd": "${workspaceFolder}/api/",
         "env": {
-          "HARDHAT_NETWORK": "localhost",
+          "HARDHAT_NETWORK": "mumbai",
           "ALCHEMY_APP_API_KEY_GOERLI": "s_7N0dmQWg2x-ZZ3zZsQEzC0aM5F01mI",
           "ALCHEMY_APP_API_KEY_MUMBAI": "O5QqGlDXFYuko1squ-_1tsuxINrqtUa9",
           "PLAYER_API": "http://localhost:3001",

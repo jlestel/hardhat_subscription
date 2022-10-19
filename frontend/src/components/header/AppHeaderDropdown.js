@@ -95,16 +95,10 @@ const AppHeaderDropdown = () => {
             <CDropdownMenu className="pt-0" placement="bottom-end">
               <CDropdownHeader className="bg-light fw-semibold py-2">Switch Network in Metamask</CDropdownHeader>
               <CDropdownItem>
-                Avalanche Fuji
+                Ethereum Goerli Testnet
               </CDropdownItem>
               <CDropdownItem>
-                BNB Chain Testnet
-              </CDropdownItem>
-              <CDropdownItem>
-                Fantom Testnet
-              </CDropdownItem>
-              <CDropdownItem>
-                Polygon Mumbai
+                Polygon Mumbai Testnet
               </CDropdownItem>
             </CDropdownMenu>
           </CDropdownToggle>
