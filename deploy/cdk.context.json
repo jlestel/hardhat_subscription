@@ -18,5 +18,9 @@
     "us-east-1d",
     "us-east-1e",
     "us-east-1f"
-  ]
+  ],
+  "hosted-zone:account=892044541204:domainName=payperblock.xyz:region=us-east-1": {
+    "Id": "/hostedzone/Z02365701M1BDCKRDL53I",
+    "Name": "payperblock.xyz."
+  }
 }

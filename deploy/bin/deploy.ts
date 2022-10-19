@@ -21,7 +21,7 @@ class MyStaticSiteStack extends cdk.Stack {
       domainName: this.node.tryGetContext('domain'),
     });
     const sslCertificate = new cdk.aws_certificatemanager.DnsValidatedCertificate(this, 'ApiPayperblockCertificate', {
-      domainName: "apipayperblock." + this.node.tryGetContext('domain'),
+      domainName: "api." + this.node.tryGetContext('domain'),
       subjectAlternativeNames: ["*.player." + this.node.tryGetContext('domain')],
       validation: cdk.aws_certificatemanager.CertificateValidation.fromDns(hostedZone),
       hostedZone,
@@ -42,11 +42,15 @@ class MyStaticSiteStack extends cdk.Stack {
         ],
         allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         allowCredentials: true,
-        allowOrigins: ['http://localhost:3000', 'https://payperblock.' + this.node.tryGetContext('domain'), 'https://apipayperblock.' + this.node.tryGetContext('domain')],
+        allowOrigins: [
+          'https://www.' + this.node.tryGetContext('domain'),
+          'https://*.player.' + this.node.tryGetContext('domain'),
+          'http://localhost:3000',
+        ],
       },
       domainName: {
         //domainName: `*.player.${this.node.tryGetContext('domain')}`,
-        domainName: `apipayperblock.${this.node.tryGetContext('domain')}`,
+        domainName: `api.${this.node.tryGetContext('domain')}`,
         certificate: sslCertificate,
         endpointType: cdk.aws_apigateway.EndpointType.REGIONAL,
       },
@@ -66,7 +70,11 @@ class MyStaticSiteStack extends cdk.Stack {
         ],
         allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         allowCredentials: true,
-        allowOrigins: ['http://localhost:3000', 'https://payperblock.' + this.node.tryGetContext('domain')],
+        allowOrigins: [
+          'https://www.' + this.node.tryGetContext('domain'),
+          'https://*.player.' + this.node.tryGetContext('domain'),
+          'http://localhost:3000',
+        ],
       },
       domainName: {
         domainName: `*.player.${this.node.tryGetContext('domain')}`,
@@ -85,7 +93,7 @@ class MyStaticSiteStack extends cdk.Stack {
     });
     new cdk.aws_route53.ARecord(this, "PayperblockPlayerApiDns", {
       zone: hostedZone,
-      recordName: "apipayperblock",
+      recordName: "api",
       target: cdk.aws_route53.RecordTarget.fromAlias(
         new cdk.aws_route53_targets.ApiGateway(api)
       ),
