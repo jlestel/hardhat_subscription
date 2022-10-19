@@ -61,7 +61,7 @@ export function Usage({ }) {
             <CCardBody>
               <CCardTitle>2 - Payment by duration</CCardTitle>
               <CCardText>
-                End-customer <b>is charged based on the time spent viewing your content.</b> <a href="https://2105120523263239.player.citio.digital/playerppb" target="_blank" rel="noreferrer">Run a by duration live example now !</a>
+                End-customer <b>is charged based on the time spent viewing your content.</b> <a href="https://4166307680926337.player.citio.digital/playerppb" target="_blank" rel="noreferrer">Run a by duration live example now !</a>
               </CCardText>
               <CButton href="/#/plan/create" disabled={!selectedAddress}>Create a plan</CButton>
             </CCardBody>
@@ -79,6 +79,9 @@ export function Usage({ }) {
           </CCard>
         </CCol>
       </CRow>
+      <CCallout color="secondary"  className="text-center">
+      <b>The origin of payment by access duration:</b> <a href="https://en.wikipedia.org/wiki/Minitel">Minitel</a> was invented in France 40 years ago. <br/>This payment method is now back thanks to Web3... and to a decentralized organization of French innovators!
+      </CCallout>
       <CCallout color="primary">
         <p>For subscriptions payments (recurring or by duration), your end-customers maintain control over their assets while <b>removing the need to sign every recurring transaction</b>. Subscription is charged while <b>token allowed amount is sufficient</b>.</p>
       <p>
@@ -88,9 +91,8 @@ export function Usage({ }) {
         Reduced churn, increase conversion, and save hours not having to follow up with customers each period.
       </p>
       </CCallout>
-      
       <h2>Want to monetize your content or anything for crypto?</h2>
-      <h4>Everything is automated WITHOUT CODE for your Web, Telegram and Discord content:</h4>
+      <h4>Everything is automated WITHOUT CODE for any business:</h4>
       <CAccordion flush>
         <CAccordionItem itemKey={1}>
           <CAccordionHeader><b>Telegram</b>: we manage allowed users and subscriptions for you</CAccordionHeader>
@@ -118,45 +120,13 @@ export function Usage({ }) {
             </ul>
           </CAccordionBody>
         </CAccordionItem>
+        <CAccordionItem itemKey={4}>
+          <CAccordionHeader><b>Only accept crypto</b>: we manage subscriptions and payments for you even if you&apos;re not selling content.</CAccordionHeader>
+          <CAccordionBody>
+          You can insert our payment solution on your website or directly in your physical store by sharing the link to subscribe to your plans.
+          </CAccordionBody>
+        </CAccordionItem>
       </CAccordion>
-      <br/>
-      <h2>Want to integrate Web3 payment methods in your business?</h2>
-      <h4>Integrates seamlessly Payperblock into your business stack:</h4>
-      <CRow>
-      <CCol xs>
-          <CCard>
-            <CCardBody>
-              <CCardTitle>Receipts and reminders</CCardTitle>
-              <CCardText>
-              Spend less time tracking down payments and more time growing your business.<br/>
-              We send reminders, and payment retries - so you don’t have to.
-              </CCardText>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol xs>
-          <CCard>
-            <CCardBody>
-              <CCardTitle>Front / API</CCardTitle>
-              <CCardText>
-              You can share our default payment page to your customers.<br/>
-              Or integrate payment via our Javascript API with a few lines of code.
-              </CCardText>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol xs>
-          <CCard>
-            <CCardBody>
-              <CCardTitle>Webhooks</CCardTitle>
-              <CCardText>
-              You can use Webhooks to make integration seamless. <br/>
-              Save hours of manual reconciliation work by connecting with systems you already use.
-              </CCardText>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
       <br/>
       <Api />
       <br/>

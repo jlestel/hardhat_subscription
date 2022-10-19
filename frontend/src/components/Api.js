@@ -5,6 +5,7 @@ import { atomOneDark, CopyBlock } from "react-code-blocks";
 export function Api({ }) {
 
   return (
+    <>
     <CRow>
       <h2>Start now to accept crypto payments!</h2>
       <h4>By direct link or Javascript integration on your Website</h4>
@@ -51,9 +52,46 @@ payperblock.subscribe({
           </CCardBody>
         </CCard>
       </CCol>
-
-
     </CRow>
+    <br/>
+      <h4>... and integrate seamlessly Payperblock into your business stack:</h4>
+      <CRow>
+      <CCol xs>
+          <CCard>
+            <CCardBody>
+              <CCardTitle>Receipts and reminders</CCardTitle>
+              <CCardText>
+              Spend less time tracking down payments and more time growing your business.<br/>
+              We send reminders, and payment retries - so you don’t have to.
+              </CCardText>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol xs>
+          <CCard>
+            <CCardBody>
+              <CCardTitle>Front / API</CCardTitle>
+              <CCardText>
+              You can share our default payment page to your customers.<br/>
+              Or integrate payment via our Javascript API with a few lines of code.
+              </CCardText>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol xs>
+          <CCard>
+            <CCardBody>
+              <CCardTitle>Webhooks</CCardTitle>
+              <CCardText>
+              You can use Webhooks to make integration seamless. <br/>
+              Save hours of manual reconciliation work by connecting with systems you already use.
+              </CCardText>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+    </>
+    
   );
 }
 
