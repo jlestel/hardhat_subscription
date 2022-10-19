@@ -129,7 +129,7 @@ class MyStaticSiteStack extends cdk.Stack {
         "HARDHAT_NETWORK": "mumbai",
         "ALCHEMY_APP_API_KEY_GOERLI": "s_7N0dmQWg2x-ZZ3zZsQEzC0aM5F01mI",
         "ALCHEMY_APP_API_KEY_MUMBAI": "O5QqGlDXFYuko1squ-_1tsuxINrqtUa9",
-        "PLAYER_API": "https://apipayperblock.citio.digital",
+        "PLAYER_API": "https://api.payperblock.xyz",
         "NETWORKS"  : "80001,1337",
       },
       retryAttempts: 0,

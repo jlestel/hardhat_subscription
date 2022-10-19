@@ -48,7 +48,7 @@ export function Usage({ }) {
         <CCol sm={4}>
           <CCard className="text-center">
             <CCardBody>
-              <CCardTitle>1 - Recurring payment</CCardTitle>
+              <CCardTitle>Recurring payment</CCardTitle>
               <CCardText>
                 Accept crypto for your <b>subscription business</b> without your end-customers having to initiate every payment.
               </CCardText>
@@ -59,9 +59,9 @@ export function Usage({ }) {
         <CCol sm={4}>
           <CCard className="text-center">
             <CCardBody>
-              <CCardTitle>2 - Payment by duration</CCardTitle>
+              <CCardTitle>Pay per view time (duration)</CCardTitle>
               <CCardText>
-                End-customer <b>is charged based on the time spent viewing your content.</b> <a href="https://4166307680926337.player.citio.digital/playerppb" target="_blank" rel="noreferrer">Run a by duration live example now !</a>
+                End-customer <b>is charged based on the time spent viewing your content.</b><br/><a href="https://4166307680926337.player.payperblock.xyz/playerppb" target="_blank" rel="noreferrer">Run a by &quot;Pay per duration&quot; live example now</a>
               </CCardText>
               <CButton href="/#/plan/create" disabled={!selectedAddress}>Create a plan</CButton>
             </CCardBody>
@@ -70,7 +70,7 @@ export function Usage({ }) {
         <CCol sm={4}>
           <CCard className="text-center">
             <CCardBody>
-              <CCardTitle>3 - One-time payment</CCardTitle>
+              <CCardTitle>One-time payment</CCardTitle>
               <CCardText>
                 Accept a <b>one-time crypto payment</b> to give access to your content or anything else. Access is lifetime while not cancelled by customer.
               </CCardText>

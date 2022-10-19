@@ -30,4 +30,4 @@ preparehardhatlambda:
 
 cdk:
 	- make preparehardhatlambda
-	- cd deploy && AWS_PROFILE=citio_profile cdk deploy -c accountId=892044541204 -c domain=citio.digital -c subdomain=payperblock
+	- cd deploy && AWS_PROFILE=citio_profile cdk deploy -c accountId=892044541204 -c domain=payperblock.xyz -c subdomain=www

@@ -74,7 +74,7 @@ async function proxyRequest(clientRequest, clientResponse) {
           const plan = session ? session.subscription : 'Pas de session';
           body = body.replace('</body>', player.toString()
             .replace(new RegExp('{{plan}}', 'g'), plan)
-            .replace(RegExp('{{domain}}', 'g'), 'https://payperblock.citio.digital/#/subscription/list')
+            .replace(RegExp('{{domain}}', 'g'), 'https://www.payperblock.xyz/#/subscription/list')
             .replace(RegExp('{{byDuration}}', 'g'), session.type.toString() == '3' ? 'true' : 'false')
             .replace(RegExp('{{session}}', 'g'), keySession)
             .replace(RegExp('{{api}}', 'g'), process.env.PLAYER_API)
