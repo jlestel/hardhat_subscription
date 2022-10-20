@@ -50,7 +50,7 @@
         "name": "Launch Chrome",
         "request": "launch",
         "type": "pwa-chrome",
-        "url": "http://hardhat.local",
+        "url": "http://localhost:3000",
         "webRoot": "${workspaceFolder}/frontend/"
     },
       {

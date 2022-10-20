@@ -1,10 +1,41 @@
 // We'll use ethers to interact with the Ethereum network and our contract
 import { ethers } from "ethers";
+import { createAlchemyWeb3 } from "@alch/alchemy-web3";
 
 // This is an error code that indicates that the user canceled a transaction
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
 
 let _pollDataInterval = null;
+
+const changeChain = async(chain) => {
+  const web3 = createAlchemyWeb3(chain.url + chain.apiKey); 
+  if (window.ethereum.networkVersion !== chain.chainId) {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: web3.utils.toHex(chain.chainId) }]
+      });
+    } catch (err) {
+        // This error code indicates that the chain has not been added to MetaMask
+      if (err.code === 4902) {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainName: chain.chainName,
+              chainId: web3.utils.toHex(chain.chainId),
+              nativeCurrency: chain.nativeCurrency,
+              rpcUrls: chain.rpcUrls,
+              blockExplorerUrls: chain.blockExplorerUrls,
+            }
+          ]
+        });
+      } else {
+        console.log(err);
+      }
+    }
+  }
+}
 
 const connectWallet = async(dispatch) => {
   if (dispatch)
@@ -630,6 +661,7 @@ const _checkNetwork = async() => {
 
 export {
   connectWallet,
+  changeChain,
   createPlan,
   cancel,
   release,

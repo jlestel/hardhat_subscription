@@ -6,21 +6,33 @@ const { Alchemy, Network, TokenBalanceType } = require("alchemy-sdk");
 const mapping = {
   '5': {
     alchemy: Network.ETH_GOERLI,
-    contract: "goerli",
+    key: "goerli",
     name: "Goerli Testnet",
     apiKey: process.env.ALCHEMY_APP_API_KEY_GOERLI,
+    url: 'https://eth-goerli.g.alchemy.com/v2/',
+    nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'GoerliETH' },
+    rpcUrls: ['https://goerli.infura.io/v3/'],
+    blockExplorerUrls: ['https://goerli.etherscan.io'],
   },
   '1337': {
     alchemy: null,
-    contract: "localhost",
+    key: "localhost",
     name: "HardHat Local",
     apiKey: process.env.ALCHEMY_APP_API_KEY_GOERLI,
+    url: 'https://eth-goerli.g.alchemy.com/v2/',
+    nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'LocalETH' },
+    rpcUrls: ['http://localhost:8545'],
+    blockExplorerUrls: [],
   },
   '80001': {
     alchemy: Network.MATIC_MUMBAI,
-    contract: "mumbai",
+    key: "mumbai",
     name: "Mumbai Testnet",
     apiKey: process.env.ALCHEMY_APP_API_KEY_MUMBAI,
+    url: 'https://polygon-mumbai.g.alchemy.com/v2/',
+    nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
+    rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+    blockExplorerUrls: ['https://polygonscan.com/'],
   },
 };
 
@@ -32,18 +44,18 @@ router.get('/', async function(req, res, next) {
 
 router.get('/getContracts', async function(req, res, next) { 
   const r = mapping;
-  r['5'].smartContractAddress = await getContract("PaymentV1", mapping['5'].contract);
-  r['5'].abi = await getContract("PaymentV1", mapping['5'].contract, true);
-  r['1337'].smartContractAddress = await getContract("PaymentV1", mapping['1337'].contract);
-  r['1337'].abi = await getContract("PaymentV1", mapping['1337'].contract, true);
-  r['80001'].smartContractAddress = await getContract("PaymentV1", mapping['80001'].contract);
-  r['80001'].abi = await getContract("PaymentV1", mapping['80001'].contract, true);
+  r['5'].smartContractAddress = await getContract("PaymentV1", mapping['5'].key);
+  r['5'].abi = await getContract("PaymentV1", mapping['5'].key, true);
+  r['1337'].smartContractAddress = await getContract("PaymentV1", mapping['1337'].key);
+  r['1337'].abi = await getContract("PaymentV1", mapping['1337'].key, true);
+  r['80001'].smartContractAddress = await getContract("PaymentV1", mapping['80001'].key);
+  r['80001'].abi = await getContract("PaymentV1", mapping['80001'].key, true);
   res.json(r);
   res.end();
 });
 router.get('/plan/:id', async function(req, res, next) {
   const network = '80001';
-  const contract = await getContract("PaymentV1", mapping[network].contract)
+  const contract = await getContract("PaymentV1", mapping[network].key)
   const payment = await hre.ethers.getContractAt("PaymentV1", contract);
   const plans = await payment.getPlans(false);
   const plan = plans.filter(e => e.planId.toString() == req.params.id)[0];
@@ -55,7 +67,7 @@ router.get('/plan/:id', async function(req, res, next) {
   
   const metadata = await alchemy.core.getTokenMetadata(plan.token.toString());
   res.json({
-    network: mapping[network].contract,
+    network: mapping[network].key,
     id: plan.planId.toString(),
     wallet: plan.merchant,
     interval: plan.frequency.toString(),
@@ -71,8 +83,7 @@ router.get('/plan/:id', async function(req, res, next) {
 
 router.post('/getContracts', async function(req, res, next) { 
   const arr = process.env.NETWORKS.split(',');
-  //const finalRes = {};
-  
+  // get tokens to verify
   let tokens = [];
   if (mapping[req.body.network].alchemy) {
     const alchemy = new Alchemy({
@@ -86,7 +97,7 @@ router.post('/getContracts', async function(req, res, next) {
   
     // The token address we want to query for metadata
     for (var i = 0; i < balances.tokenBalances.length; i++) {
-      const metadata = await alchemy.core.getTokenMetadata(balances.tokenBalances[i].contractAddress);
+      const metadata = await alchemy.core.getTokenMetadata(balances.tokenBalances[i].keyAddress);
       console.log("TOKEN METADATA");
       console.log(metadata);
       tokens.push({name: metadata.symbol, decimals: metadata.decimals, symbol: metadata.symbol, address: balances.tokenBalances[i].contractAddress, abi: await getContract(metadata.symbol, "sample")})
@@ -99,25 +110,36 @@ router.post('/getContracts', async function(req, res, next) {
     "networkName":mapping[req.body.network].name,
     "contract": {
       "name":"PaymentV1",
-      "address": await getContract("PaymentV1", mapping[req.body.network].contract),
-      "abi": await getContract("PaymentV1", mapping[req.body.network].contract, true),
+      "address": await getContract("PaymentV1", mapping[req.body.network].key),
+      "abi": await getContract("PaymentV1", mapping[req.body.network].key, true),
     },
     "tokens": [
       {
         "name":"PPB",
         "symbol":"PPB",
         "decimals": 18,
-        "address": await getContract("Token", mapping[req.body.network].contract),
+        "address": await getContract("Token", mapping[req.body.network].key),
         "abi": await getContract("Token", "sample"),
       },
       {
         "name":"BUSD",
         "symbol":"BUSD",
         "decimals": 18,
-        "address": await getContract("TokenBis", mapping[req.body.network].contract),
+        "address": await getContract("TokenBis", mapping[req.body.network].key),
         "abi": await getContract("TokenBis", "sample"),
       }
-    ].concat(tokens)
+    ].concat(tokens),
+    "otherNetworks": arr.filter(e => e != req.body.network).map(e => {
+      return {
+        chainId: e,
+        chainName: mapping[e].name,
+        nativeCurrency: mapping[e].nativeCurrency,
+        rpcUrls: mapping[e].rpcUrls,
+        url: mapping[e].url,
+        apiKey: mapping[e].apiKey,
+        blockExplorerUrls: mapping[e].blockExplorerUrls,
+      } 
+    })
   };
 
   res.json(finalRes); 

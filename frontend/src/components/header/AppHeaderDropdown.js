@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  CAvatar,
   CBadge,
   CButton,
   CDropdown,
@@ -11,27 +10,19 @@ import {
   CDropdownToggle,
 } from '@coreui/react'
 import {
-  cilBell,
   cilCreditCard,
-  cilCommentSquare,
-  cilEnvelopeOpen,
-  cilFile,
   cilCheck,
   cilLockLocked,
-  cilSettings,
   cilTask,
   cilUser,
   cilCloudy,
-  cilAt,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
-import avatar8 from './../../assets/images/avatars/8.jpg'
 
-import { useState } from "react";
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-import { connectWallet, reset } from "../Dapp";
+import { connectWallet, changeChain } from "../Dapp";
 
 const AppHeaderDropdown = () => {
   const selectedAddress = useSelector((state) => state.selectedAddress)
@@ -40,7 +31,7 @@ const AppHeaderDropdown = () => {
   const plans = useSelector((state) => state.plans)
   const selectedNetwork = useSelector((state) => state.selectedNetwork)
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -93,13 +84,14 @@ const AppHeaderDropdown = () => {
               {selectedNetwork.networkName}
             </CButton>
             <CDropdownMenu className="pt-0" placement="bottom-end">
-              <CDropdownHeader className="bg-light fw-semibold py-2">Switch Network in Metamask</CDropdownHeader>
-              <CDropdownItem>
-                Ethereum Goerli Testnet
-              </CDropdownItem>
-              <CDropdownItem>
-                Polygon Mumbai Testnet
-              </CDropdownItem>
+              <CDropdownHeader className="bg-light fw-semibold py-2">Switch Network in Metamask dsf{selectedNetwork.otherNetworks.length}</CDropdownHeader>
+              {selectedNetwork && selectedNetwork.otherNetworks && selectedNetwork.otherNetworks.length > 0 && (
+                selectedNetwork.otherNetworks.map(e => {
+                  return <CDropdownItem onClick={i => changeChain(e)} key={e.chainId}>
+                    {e.chainName}
+                  </CDropdownItem>;
+                })
+              )}
             </CDropdownMenu>
           </CDropdownToggle>
         </CDropdown>
