@@ -70,14 +70,19 @@ const connectWallet = async(dispatch) => {
       //  _reset();
       //  return
       //}
-    if (newAddress !== undefined) _initialize(newAddress);
+    if (newAddress !== undefined) {
+      _initialize(newAddress);
+    }
   });
   
   // We reset the dapp state if the network is changed
   window.ethereum.on("chainChanged", ([networkId]) => {
+    //console.log('networkId chainged',networkId);
+    //console.log('networkId ',window.ethereum.networkVersion);
     //_stopPollingData();
     //_reset();
     reset();
+    connectWallet();
   });
 }
 
@@ -651,11 +656,11 @@ const _checkNetwork = async() => {
   //global.dispatch({ type: 'set', tokens: global.tokens})
   global.dispatch({ type: 'set', selectedNetwork: global.tokens})
 
-  if (global.tokens !== undefined) {
+  if (global.tokens.networkId > 0) {
     return true;
   }
   //console.log('invalid network ', window.ethereum.networkVersion)
-  global.dispatch({ type: 'set',  networkError: 'Your Metamask network is not supported. You can use "Mumbai or Goerli Testnet" network in Metamask to try Payperblock. (Click on show/hide test networks in Metamask. To add Mumbai, click on "Add network" and fill: Network name: Mumbai Testnet - RPC URL: https://rpc-mumbai.maticvigil.com/ - Chain ID: 80001 - Currency Symbol: MATIC - Block explorer: https://polygonscan.com/'});
+  global.dispatch({ type: 'set',  networkError: 'Your Metamask network is not supported. You can switch to "Mumbai or Goerli Testnet" network to try Payperblock.'});
   return false;
 }
 
